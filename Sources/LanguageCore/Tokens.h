@@ -6,12 +6,11 @@
 #define RANOKLANGUAGE_TOKENS_H
 
 #include <string>
-#include <variant>
 
 
 enum class Token
 {
-    Begin,
+    None,
     Id,
     Number,
     Assign,
@@ -33,8 +32,8 @@ static std::string TokenToString(Token token)
 {
     switch (token)
     {
-        case Token::Begin:
-            return "Begin";
+        case Token::None:
+            return "None";
         case Token::Id:
             return "Id";
         case Token::Number:
@@ -66,6 +65,7 @@ static std::string TokenToString(Token token)
         case Token::Union:
             return "Union";
     }
+    return "";
 }
 
 #endif //RANOKLANGUAGE_TOKENS_H

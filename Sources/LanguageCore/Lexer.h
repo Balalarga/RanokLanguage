@@ -1,24 +1,25 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include "Utils.h"
 #include "Tokens.h"
+
 #include <queue>
-#include <variant>
 
-struct Lexeme
+
+struct Lexeme: public Variant<std::string, double>
 {
-    Lexeme(const Token& token, const std::string& name):
-        token(token),
-        value(name){}
-    Lexeme(const Token& token, const char& name):
-            token(token),
-            value(std::string(1, name)){}
-    Lexeme(const Token& token, const double& value):
-            token(token),
-            value(value){}
+    Lexeme(const Token& token, std::string name):
+        Variant<std::string, double>(name),
+        type(token) {}
+    Lexeme(const Token& token, char name):
+        Variant<std::string, double>(std::string(1, name)),
+        type(token) {}
+    Lexeme(const Token& token, double value):
+        Variant<std::string, double>(value),
+        type(token) {}
 
-    Token token;
-    std::variant<std::string, double> value;
+    Token type;
 };
 
 class Lexer
@@ -29,8 +30,8 @@ public:
     void Process(const std::string& code, bool forceClean = true);
     std::string GetError() const;
 
-    const Lexeme& Top() const;
-    Lexeme Pop();
+    Lexeme& Top();
+    Lexeme& Pop(Token token = Token::None);
     bool Empty() const;
 
 protected:

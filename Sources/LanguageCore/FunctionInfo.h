@@ -11,10 +11,16 @@
 
 
 template<class T>
-struct FunctionInfo
+struct FunctionInfo: public std::function<T>
 {
+    FunctionInfo(const std::string& name, std::function<T> function):
+        std::function<T>(function),
+        name(name)
+    {
+
+    }
+
     const std::string name;
-    const std::function<T> function;
 };
 
 #endif //RANOKLANGUAGE_FUNCTIONINFO_H

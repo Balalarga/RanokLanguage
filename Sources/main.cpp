@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "LanguageCore/Lexer.h"
+#include "LanguageCore/Parser.h"
 
 using namespace std;
 
@@ -22,14 +23,18 @@ void PrintArgs(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
+    string file = "../CodeExamples/test1.txt";
     if (argc != 2)
     {
-        cout << "Argument error: must be like: app.exe code.txt\n";
-        PrintArgs(argc, argv);
-        return NextErrorCode();
+        //cout << "Argument error: must be like: app.exe code.txt\n";
+        //return NextErrorCode();
+    }
+    else
+    {
+        file = argv[1];
     }
 
-    fstream codeFile(argv[1]);
+    fstream codeFile(file);
     if (!codeFile)
     {
         cout << "Couldn't open file " << argv[1] << endl;
@@ -43,12 +48,16 @@ int main(int argc, char** argv)
 
     Lexer lexer;
     lexer.Process(code);
-    while (!lexer.Empty())
+
+    Parser parser;
+    Program program = parser.Parse(lexer);
+    queue<pair<int, spExpression>> nodes;
+    program.Root()->Visit(nodes);
+    while(!nodes.empty())
     {
-        auto lexeme = lexer.Pop();
-        cout << TokenToString(lexeme.token)<<": ";
-        visit([](const auto& value){ cout << value;}, lexeme.value);
-        cout<<"\n";
+        auto& top = nodes.front();
+        cout<<top.second->name<<endl;
+        nodes.pop();
     }
 
     return 0;

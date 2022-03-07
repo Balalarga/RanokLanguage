@@ -1,7 +1,9 @@
-#include <sstream>
 #include "Lexer.h"
+#include <sstream>
+#include <iostream>
 
 using namespace std;
+
 
 void Lexer::Process(const std::string &code, bool forceClean)
 {
@@ -13,7 +15,7 @@ void Lexer::Process(const std::string &code, bool forceClean)
             _lexemes.pop();
 
     unsigned pivot = 0;
-    while(_lexemes.empty() || _lexemes.back().token != Token::End)
+    while(_lexemes.empty() || _lexemes.back().type != Token::End)
         _lexemes.push(NextLexeme(code, pivot));
 }
 
@@ -125,11 +127,22 @@ std::string Lexer::GetError() const
     return _error;
 }
 
-Lexeme Lexer::Pop()
+Lexeme& Lexer::Pop(Token token)
 {
-    Lexeme topLexem = _lexemes.front();
+    std::cout << "Poped: " << TokenToString(_lexemes.front().type)<<": ";
+
+    if (_lexemes.front().Is<std::string>())
+        std::cout << _lexemes.front().Get<std::string>();
+    else
+        std::cout << _lexemes.front().Get<double>();
+    std::cout << "\n";
+    
     _lexemes.pop();
-    return topLexem;
+    
+    if (token != Token::None && _lexemes.front().type != token)
+        std::cout<<"Error: Token is "<< TokenToString(_lexemes.front().type) <<"Expected "<< TokenToString(token)<<"\n";
+
+    return _lexemes.front();
 }
 
 bool Lexer::Empty() const
@@ -137,7 +150,7 @@ bool Lexer::Empty() const
     return _lexemes.empty();
 }
 
-const Lexeme& Lexer::Top() const
+Lexeme& Lexer::Top()
 {
     return _lexemes.front();
 }

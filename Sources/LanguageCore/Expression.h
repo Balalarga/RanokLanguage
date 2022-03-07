@@ -11,15 +11,15 @@
 #include <memory>
 
 #include "FunctionInfo.h"
-#include "Checks.h"
+#include "Utils.h"
 
 
 class Expression
 {
 public:
-    Expression() = default;
+    Expression(const std::string& name = "");
 
-    virtual void Visit(std::queue<std::shared_ptr<Expression>>){}
+    virtual void Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>&, int depth = 0);
     virtual double GetValue();
     virtual void Reset();
 
@@ -27,11 +27,24 @@ public:
 
     inline bool Computed() const { return computed; }
 
+    const std::string name;
+
+
 protected:
     bool computed = false;
     double value = 0;
 };
 using spExpression = std::shared_ptr<Expression>;
+
+
+class NumberExpression: public Expression
+{
+public:
+    NumberExpression(double value);
+    void Reset() override;
+};
+using spNumberExpression = std::shared_ptr<NumberExpression>;
+
 
 class ArgumentExpression: public Expression
 {
@@ -42,39 +55,33 @@ public:
         double max;
     };
 
-    ArgumentExpression(const std::string& name, const Range& range):
-        name(name),
-        range(range){}
+    ArgumentExpression(const std::string& name, const Range& range);
 
     const Range range;
-    const std::string name;
 };
 using spArgumentExpression = std::shared_ptr<ArgumentExpression>;
+
 
 class VariableExpression: public Expression
 {
 public:
-    VariableExpression(const std::string& name, spExpression child):
-        name(name),
-        child(child){}
+    VariableExpression(const std::string& name, spExpression child);
 
-    virtual void Visit(std::queue<spExpression> container) override;
+    virtual void Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>& container, int depth = 0) override;
     virtual double GetValue() override;
     virtual void Reset() override;
 
     spExpression const child;
-    const std::string name;
 };
 using spVariableExpression = std::shared_ptr<VariableExpression>;
+
 
 class UnaryOperation: public Expression
 {
 public:
-    UnaryOperation(const FunctionInfo<double(double)>& operation, spExpression child):
-        operation(operation),
-        child(child){}
+    UnaryOperation(const FunctionInfo<double(double)>& operation, spExpression child);
 
-    virtual void Visit(std::queue<spExpression> container) override;
+    virtual void Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>& container, int depth = 0) override;
     virtual double GetValue() override;
     virtual void Reset() override;
 
@@ -83,38 +90,32 @@ public:
 };
 using spUnaryOperation = std::shared_ptr<UnaryOperation>;
 
+
 class BinaryOperation: public Expression
 {
 public:
-    struct Duo
-    {
-        Duo(const spExpression left, const spExpression right):
-            left(left),
-            right(right){}
-        const spExpression left;
-        const spExpression right;
-    };
-    BinaryOperation(const FunctionInfo<double(double, double)>& operation, Duo childs):
-            operation(operation),
-            childs(childs){}
+    BinaryOperation(const FunctionInfo<double(double, double)>& operation,
+        spExpression leftChild,
+        spExpression rightChild);
 
-    virtual void Visit(std::queue<spExpression> container) override;
+    virtual void Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>& container, int depth = 0) override;
     virtual double GetValue() override;
     virtual void Reset() override;
 
     const FunctionInfo<double(double, double)> operation;
-    const Duo childs;
+    spExpression const leftChild;
+    spExpression const rightChild;
 };
 using spBinaryOperation = std::shared_ptr<BinaryOperation>;
+
 
 class FunctionExpression: public Expression
 {
 public:
-    using FuncType = CheckedResult<spExpression, std::string>(std::vector<spExpression>);
-    FunctionExpression(const FunctionInfo<FuncType>& function, const std::vector<spExpression>& args):
-        function(function){}
+    using FuncType = Variant<spExpression, std::string>(std::vector<spExpression>);
+    FunctionExpression(const FunctionInfo<FuncType>& function, const std::vector<spExpression>& args);
 
-    virtual void Visit(std::queue<spExpression> container) override;
+    virtual void Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>& container, int depth = 0) override;
     virtual double GetValue() override;
     virtual void Reset() override;
 
@@ -122,5 +123,6 @@ public:
     const std::vector<spExpression> params;
 };
 using spFunctionExpression = std::shared_ptr<FunctionExpression>;
+
 
 #endif //RANOKLANGUAGE_EXPRESSION_H

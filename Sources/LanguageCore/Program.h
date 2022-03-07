@@ -6,7 +6,7 @@
 #define RANOKLANGUAGE_PROGRAM_H
 
 #include "Expression.h"
-
+#include "SymbolsTable.h"
 
 class Program
 {
@@ -16,15 +16,14 @@ public:
     void Init(spExpression begin);
 
     double Process();
-
-    inline const std::vector<spArgumentExpression>& Arguments() { return _arguments; }
-    inline const std::vector<spVariableExpression>& Variables() { return _variables; }
+    inline SymbolsTable& Table() { return _symbolsTable; }
+    inline const spExpression& Root() { return _root; }
 
 
 private:
-    spExpression _begin;
-    std::vector<spArgumentExpression> _arguments;
-    std::vector<spVariableExpression> _variables;
+    spExpression _root;
+    SymbolsTable _symbolsTable;
+
 };
 
 

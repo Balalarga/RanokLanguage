@@ -1,1 +1,5 @@
-var x = 2;
+args x(2), y(2), z(2);
+
+var w = 2 * x - y^2;
+
+return w + z;
