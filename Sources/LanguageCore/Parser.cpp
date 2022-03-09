@@ -4,6 +4,7 @@
 
 #include "Parser.h"
 #include "Operations.h"
+#include "Functions.h"
 
 #include <iostream>
 
@@ -26,7 +27,7 @@ Program Parser::Parse(Lexer lexer)
     _program = &program;
     _lexer = &lexer;
     Lexeme lexeme = LexerCheckedTop();
-    while (!_lexer->Empty() && lexeme.Type() != Token::End)
+    while (!_lexer->Empty() && lexeme.Type() != Token::End || lexeme.Type() != Token::None)
     {
         std::string tokenName;
         tokenName = lexeme.Name();
@@ -237,11 +238,28 @@ spExpression Parser::Factor()
         if (auto expr = _program->Table().FindConstant(prev.Name()))
             return expr;
 
-        // if (auto func = LangFunctions::FindFunction(prev.name))
-        //     return std::make_shared<FunctionExpression>(func, Term());
+        if (auto func = Functions::Find(prev.Name()))
+        {
+            std::vector<spExpression> args;
+            HandleFunctionArgs(args);
+            return std::make_shared<FunctionExpression>(*func, args);
+        }
 
         if (auto expr = _program->Table().FindVariable(prev.Name()))
             return expr;
     }
     return nullptr;
+}
+
+void Parser::HandleFunctionArgs(std::vector<spExpression>& args)
+{
+    Lexeme lexeme = LexerCheckedPop(Token::ParenOpen);
+    while (lexeme.Type() != Token::ParenClose)
+    {
+        args.push_back(Expr());
+        lexeme = LexerCheckedTop();
+        if (lexeme.Type() == Token::Comma)
+            lexeme = LexerCheckedPop();
+    }
+    LexerCheckedPop(Token::ParenClose);
 }

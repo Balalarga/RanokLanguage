@@ -1,5 +1,5 @@
 args x(2), y(2), z(2);
 
-var w = 2 * (x - y) ^ 2;
+w = 2 * (x - y) * cut(x, 2, 3, 4);
 
 return w;

@@ -53,8 +53,8 @@ public:
 
     std::string GetError() const;
 
-    Lexeme& Top();
-    Lexeme& Pop(Token token = Token::None);
+    Lexeme Top();
+    Lexeme Pop(Token token = Token::None);
     bool Empty() const;
 
 

@@ -113,7 +113,7 @@ using spBinaryOperation = std::shared_ptr<BinaryOperation>;
 class FunctionExpression: public Expression
 {
 public:
-    using FuncType = CheckedResult<spExpression>(std::vector<spExpression>);
+    using FuncType = CheckedResult<double>(std::vector<spExpression>);
     FunctionExpression(const FunctionInfo<FuncType>& function, const std::vector<spExpression>& args);
 
     virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;

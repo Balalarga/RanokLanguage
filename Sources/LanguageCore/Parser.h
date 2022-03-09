@@ -27,6 +27,7 @@ private:
     void HandleArgument();
     void HandleConstant();
     void HandleVariable();
+    void HandleFunctionArgs(std::vector<spExpression>& args);
     spExpression HandleReturn();
     
     spExpression Term();

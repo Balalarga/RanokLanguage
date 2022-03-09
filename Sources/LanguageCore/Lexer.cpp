@@ -43,7 +43,7 @@ Lexeme Lexer::NextLexeme(const std::string &data, unsigned int &pivot)
     }
 
     if(pivot >= data.size() || data[pivot] == '\0')
-        return {Token::End, "\\0"};
+        return {Token::End, "End"};
 
     if(data[pivot] == ';')
     {
@@ -136,12 +136,18 @@ std::string Lexer::GetError() const
     return _error;
 }
 
-Lexeme& Lexer::Pop(Token token)
+Lexeme Lexer::Pop(Token token)
 {
+    if (_lexemes.empty())
+        return {Token::None, "None"};
+
     std::cout << "Poped: " << _lexemes.front().ToPrintableString() << "\n";
     
     _lexemes.pop();
-    
+
+    if (_lexemes.empty())
+        return {Token::None, "None"};
+
     if (token != Token::None && _lexemes.front().Type() != token)
         std::cout<<"Error: Token is "<< TokenToString(_lexemes.front().Type()) <<"Expected "<< TokenToString(token)<<"\n";
 
@@ -153,9 +159,11 @@ bool Lexer::Empty() const
     return _lexemes.empty();
 }
 
-Lexeme& Lexer::Top()
+Lexeme Lexer::Top()
 {
-    return _lexemes.front();
+    if (!_lexemes.empty())
+        return _lexemes.front();
+    return {Token::None, "None"};
 }
 
 string Lexeme::ToPrintableString() const

@@ -142,7 +142,8 @@ void BinaryOperation::Reset()
 
 FunctionExpression::FunctionExpression(const FunctionInfo<FuncType>& function, const std::vector<spExpression>& args):
     Expression(function.name),
-    function(function)
+    function(function),
+    params(args)
 {
     
 }
@@ -151,15 +152,11 @@ double FunctionExpression::GetValue()
 {
     if (!Computed())
     {
-        CheckedResult<spExpression> result = function(params);
+        CheckedResult<double> result = function(params);
         if (!result.Ok())
-        {
             Reset();
-        }
         else
-        {
-            SetValue(result.Get()->GetValue());
-        }
+            SetValue(result.Get());
     }
     return Expression::GetValue();
 }

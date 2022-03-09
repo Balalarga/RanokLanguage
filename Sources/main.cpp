@@ -14,12 +14,6 @@ int& NextErrorCode()
     return --ErrorCounter;
 }
 
-void PrintArgs(int argc, char** argv)
-{
-    for(int i = 0; i < argc; ++i)
-        cout<<argv[i]<<endl;
-}
-
 
 int main(int argc, char** argv)
 {
@@ -51,9 +45,10 @@ int main(int argc, char** argv)
         while (!nodes.empty())
         {
             auto& top = nodes.front();
+            constexpr const char* depthPrefix = "  ";
             for (int i = 1; i < top.first; ++i)
-                cout << '\t';
-            cout<<"Node: "<<top.second->name<<endl;
+                cout << depthPrefix;
+            cout << top.second->name << endl;
             nodes.pop();
         }
     }
@@ -61,7 +56,6 @@ int main(int argc, char** argv)
     {
         cout << "Root is empty";
     }
-    cout << "\n\n";
 
     return 0;
 }
