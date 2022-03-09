@@ -148,17 +148,14 @@ double FunctionExpression::GetValue()
 {
     if (!Computed())
     {
-        Variant<spExpression, std::string> result = function(params);
-        if (result.Is<std::string>())
+        CheckedResult<spExpression> result = function(params);
+        if (!result.Ok())
         {
             Reset();
-            std::cout << "Function " << function.name;
-            std::cout << " execute error: ";
-            std::cout << result.Get<std::string>() << '\n';
         }
         else
         {
-            SetValue(result.Get<spExpression>()->GetValue());
+            SetValue(result.Get()->GetValue());
         }
     }
     return Expression::GetValue();

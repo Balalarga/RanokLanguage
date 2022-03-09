@@ -7,23 +7,38 @@
 #include <queue>
 
 
-struct Lexeme: public Variant<std::string, double>
+struct Lexeme
 {
     Lexeme(const Token& token, std::string name):
-        Variant<std::string, double>(name),
-        type(token) {}
+        _type(token),
+        _name(name),
+        _value(0),
+        _isNumber(false) {}
     Lexeme(const Token& token, char name):
-        Variant<std::string, double>(std::string(1, name)),
-        type(token) {}
-    Lexeme(const Token& token, double value):
-        Variant<std::string, double>(value),
-        type(token) {}
+        _type(token),
+        _name(std::string(1, name)),
+        _value(0),
+        _isNumber(false) {}
 
+    Lexeme(const Token& token, double value):
+        _type(token),
+        _name(std::to_string(value)),
+        _value(value),
+        _isNumber(true) {}
 
     std::string ToPrintableString() const;
 
+    inline const Token& Type() { return _type; }
+    inline const std::string& Name() { return _name; }
+    inline const double& Value() { return _value; }
+    inline const bool& IsNumber() { return _isNumber; }
 
-    Token type;
+
+private:
+    Token _type;
+    std::string _name;
+    double _value;
+    bool _isNumber;
 };
 
 

@@ -21,6 +21,9 @@ private:
     Program* _program = nullptr;
     Lexer* _lexer = nullptr;
 
+    Lexeme LexerCheckedPop(Token token = Token::None);
+    Lexeme LexerCheckedTop();
+
     void HandleArgument();
     void HandleConstant();
     void HandleVariable();

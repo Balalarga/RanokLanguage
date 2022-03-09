@@ -11,5 +11,5 @@ double Program::Process()
 
 void Program::Init(spExpression begin)
 {
-    _root = std::move(begin);
+    _root = begin;
 }

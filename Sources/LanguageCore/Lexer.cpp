@@ -22,7 +22,7 @@ void Lexer::Process(const std::string &code, bool forceClean)
             _lexemes.pop();
 
     unsigned pivot = 0;
-    while(_lexemes.empty() || _lexemes.back().type != Token::End)
+    while(_lexemes.empty() || _lexemes.back().Type() != Token::End)
     {
         _lexemes.push(NextLexeme(code, pivot));
     }
@@ -142,8 +142,8 @@ Lexeme& Lexer::Pop(Token token)
     
     _lexemes.pop();
     
-    if (token != Token::None && _lexemes.front().type != token)
-        std::cout<<"Error: Token is "<< TokenToString(_lexemes.front().type) <<"Expected "<< TokenToString(token)<<"\n";
+    if (token != Token::None && _lexemes.front().Type() != token)
+        std::cout<<"Error: Token is "<< TokenToString(_lexemes.front().Type()) <<"Expected "<< TokenToString(token)<<"\n";
 
     return _lexemes.front();
 }
@@ -162,12 +162,10 @@ string Lexeme::ToPrintableString() const
 {
     stringstream res;
 
-    res << TokenToString(type) << ": ";
-
-    if (Is<std::string>())
-        res << Get<std::string>();
-    else
-        res << Get<double>();
+    res << TokenToString(_type) << ": ";
+    if (_isNumber)
+        res << "(num)";
+    res << _name;
 
     return res.str();
 }

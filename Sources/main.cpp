@@ -47,11 +47,13 @@ int main(int argc, char** argv)
     {
         queue<pair<int, spExpression>> nodes;
         program.Root()->Visit(nodes);
-        cout << "Visiting AST";
-        while(!nodes.empty())
+        cout << "Visiting AST\n";
+        while (!nodes.empty())
         {
             auto& top = nodes.front();
-            cout<<top.second->name<<endl;
+            for (int i = 1; i < top.first; ++i)
+                cout << '\t';
+            cout<<"Node: "<<top.second->name<<endl;
             nodes.pop();
         }
     }

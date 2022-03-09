@@ -5,30 +5,25 @@
 #ifndef RANOKLANGUAGE_CHECKS_H
 #define RANOKLANGUAGE_CHECKS_H
 
-#include <variant>
-
-template<class T, class U>
-class Variant
+template<class T>
+class CheckedResult
 {
 public:
-    Variant(const T& value):
-        _data(value)
-    {}
-    Variant(const U& value):
-        _data(value)
-    {}
-    virtual ~Variant() = default;
-
-    template<class To>
-    bool Is() const { return std::holds_alternative<To>(_data); }
-
-    template<class To>
-    To Get() const { return std::get<To>(_data); }
-
+    CheckedResult(const T& result, bool check = true):
+        _value(result),
+        _check(check) {}
+        
+    CheckedResult():
+        _check(false) {}
     
-private:
-    std::variant<T, U> _data;
-};
+    inline bool Ok() const { return _check; }
 
+    inline const T& Get() const { return _value; }
+
+
+private:
+    T _value;
+    bool _check;
+};
 
 #endif //RANOKLANGUAGE_CHECKS_H
