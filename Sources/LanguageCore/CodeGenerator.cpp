@@ -5,8 +5,9 @@
 #include "CodeGenerator.h"
 #include "Functions.h"
 
+#include <fmt/format.h>
+
 #include <iostream>
-#include <format>
 using namespace std;
 
 std::map<std::string, std::string> CodeGenerator::defaultOperationsMappings
@@ -105,7 +106,7 @@ void CodeGenerator::GetExpressionCode(Expression*& expression, std::stringstream
     }
     else if (auto expr = dynamic_cast<BinaryOperation*>(expression))
     {
-        code << std::format();
+        code << fmt::format(GetOperationCode());
     }
     else if (auto expr = dynamic_cast<FunctionExpression*>(expression))
     {

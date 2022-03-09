@@ -24,7 +24,7 @@ public:
 protected:
     void GetFunctionCode(const std::string& name, std::stringstream& code);
     void GetOperationCode(const std::string& name, std::stringstream& code);
-    std::string GetExpressionCode(Expression*& expression, std::stringstream &code);
+    void GetExpressionCode(Expression*& expression, std::stringstream &code);
 
 private:
     void CheckMappings();
