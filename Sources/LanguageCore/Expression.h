@@ -18,8 +18,9 @@ class Expression
 {
 public:
     Expression(const std::string& name = "");
+    virtual ~Expression() = default;
 
-    virtual void Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>&, int depth = 0);
+    virtual void Visit(std::queue<std::pair<int, Expression*>>&, int depth = 0);
     virtual double GetValue();
     virtual void Reset();
 
@@ -67,7 +68,7 @@ class VariableExpression: public Expression
 public:
     VariableExpression(const std::string& name, spExpression child);
 
-    virtual void Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>& container, int depth = 0) override;
+    virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;
     virtual double GetValue() override;
     virtual void Reset() override;
 
@@ -81,7 +82,7 @@ class UnaryOperation: public Expression
 public:
     UnaryOperation(const FunctionInfo<double(double)>& operation, spExpression child);
 
-    virtual void Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>& container, int depth = 0) override;
+    virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;
     virtual double GetValue() override;
     virtual void Reset() override;
 
@@ -98,7 +99,7 @@ public:
         spExpression leftChild,
         spExpression rightChild);
 
-    virtual void Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>& container, int depth = 0) override;
+    virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;
     virtual double GetValue() override;
     virtual void Reset() override;
 
@@ -115,7 +116,7 @@ public:
     using FuncType = CheckedResult<spExpression>(std::vector<spExpression>);
     FunctionExpression(const FunctionInfo<FuncType>& function, const std::vector<spExpression>& args);
 
-    virtual void Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>& container, int depth = 0) override;
+    virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;
     virtual double GetValue() override;
     virtual void Reset() override;
 

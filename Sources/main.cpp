@@ -45,7 +45,7 @@ int main(int argc, char** argv)
     cout << "\n\n";
     if (program.Root())
     {
-        queue<pair<int, spExpression>> nodes;
+        queue<pair<int, Expression*>> nodes;
         program.Root()->Visit(nodes);
         cout << "Visiting AST\n";
         while (!nodes.empty())

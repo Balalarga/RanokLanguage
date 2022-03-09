@@ -13,9 +13,9 @@ Expression::Expression(const std::string& name):
 
 }
 
-void Expression::Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>&, int)
+void Expression::Visit(std::queue<std::pair<int, Expression*>>& container, int depth)
 {
-    
+    container.push({depth, this});
 }
 
 void Expression::SetValue(double val)
@@ -73,9 +73,10 @@ void VariableExpression::Reset()
     Expression::Reset();
 }
 
-void VariableExpression::Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>& container, int depth)
+void VariableExpression::Visit(std::queue<std::pair<int, Expression*>>& container, int depth)
 {
-    container.push({depth+1, child});
+    Expression::Visit(container, depth);
+    child->Visit(container, depth+1);
 }
 
 
@@ -101,9 +102,10 @@ double UnaryOperation::GetValue()
     return Expression::GetValue();
 }
 
-void UnaryOperation::Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>& container, int depth)
+void UnaryOperation::Visit(std::queue<std::pair<int, Expression*>>& container, int depth)
 {
-    container.push({depth+1, child});
+    Expression::Visit(container, depth);
+    child->Visit(container, depth+1);
 }
 
 BinaryOperation::BinaryOperation(const FunctionInfo<double(double, double)>& operation,
@@ -117,10 +119,11 @@ BinaryOperation::BinaryOperation(const FunctionInfo<double(double, double)>& ope
     
 }
 
-void BinaryOperation::Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>& container, int depth)
+void BinaryOperation::Visit(std::queue<std::pair<int, Expression*>>& container, int depth)
 {
-    container.push({depth+1, leftChild});
-    container.push({depth+1, rightChild});
+    Expression::Visit(container, depth);
+    leftChild->Visit(container, depth+1);
+    rightChild->Visit(container, depth+1);
 }
 
 double BinaryOperation::GetValue()
@@ -168,9 +171,9 @@ void FunctionExpression::Reset()
     Expression::Reset();
 }
 
-void FunctionExpression::Visit(std::queue<std::pair<int, std::shared_ptr<Expression>>>& container, int depth)
+void FunctionExpression::Visit(std::queue<std::pair<int, Expression*>>& container, int depth)
 {
+    Expression::Visit(container, depth);
     for(auto& i: params)
-        container.push({depth+1, i});
-    Expression::Visit(container);
+        i->Visit(container, depth+1);
 }

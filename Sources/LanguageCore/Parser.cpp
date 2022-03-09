@@ -46,13 +46,13 @@ Program Parser::Parse(Lexer lexer)
             }
             else if(CaseCompare(tokenName, "return"))
             {
-                lexeme = LexerCheckedPop();
+                LexerCheckedPop();
                 program.Init(HandleReturn());
             }
             else if (CaseCompare(tokenName, "variable") ||
                      CaseCompare(tokenName, "var"))
             {
-                lexeme = LexerCheckedPop();
+                LexerCheckedPop();
                 HandleVariable();
             }
             else
@@ -67,6 +67,8 @@ Program Parser::Parse(Lexer lexer)
         }
         lexeme = LexerCheckedPop();
     }
+    _program = nullptr;
+    _lexer = nullptr;
     return program;
 }
 
@@ -79,7 +81,7 @@ Lexeme Parser::LexerCheckedPop(Token token)
     else
     {
         std::cout << "Lexer is empty\n";
-        return Lexeme(Token::None, "NONE");
+        return {Token::None, "NONE"};
     }
 }
 Lexeme Parser::LexerCheckedTop()
@@ -91,7 +93,7 @@ Lexeme Parser::LexerCheckedTop()
     else
     {
         std::cout << "Lexer is empty\n";
-        return Lexeme(Token::None, "NONE");
+        return {Token::None, "NONE"};
     }
 }
 
@@ -105,7 +107,7 @@ void Parser::HandleArgument()
 
         lexeme = LexerCheckedPop(Token::Id);
         std::string name = lexeme.Name();
-        lexeme = LexerCheckedPop(Token::ParenOpen);
+        LexerCheckedPop(Token::ParenOpen);
         bool negative = false;
         lexeme = LexerCheckedPop();
         if (lexeme.Type() == Token::Minus)
@@ -126,7 +128,7 @@ void Parser::HandleArgument()
                 lexeme = LexerCheckedPop(Token::Number);
             }
             range.max = negative ? -lexeme.Value() : lexeme.Value();
-            lexeme = LexerCheckedPop();
+            LexerCheckedPop();
         }
         else
         {
@@ -142,25 +144,23 @@ void Parser::HandleArgument()
 void Parser::HandleConstant()
 {
     Lexeme lexeme = LexerCheckedTop();
-    Expression* expr = nullptr;
     while(lexeme.Type() != Token::Endline)
     {
-        lexeme = LexerCheckedPop();
-        // CheckToken(Token::Id);
+        lexeme = LexerCheckedPop(Token::Id);
         std::string name = lexeme.Name();
-        lexeme = LexerCheckedPop(Token::Assign);
+        LexerCheckedPop(Token::Assign);
         lexeme = LexerCheckedPop();
         Expr();
     }
-    lexeme = LexerCheckedPop();
+    LexerCheckedPop();
 }
 
 void Parser::HandleVariable()
 {
     Lexeme lexeme = LexerCheckedTop();
     std::string name = lexeme.Name();
-    lexeme = LexerCheckedPop(Token::Assign);
-    lexeme = LexerCheckedPop();
+    LexerCheckedPop(Token::Assign);
+    LexerCheckedPop();
     _program->Table().CreateVariable(name, Expr());
 }
 
@@ -168,7 +168,7 @@ spExpression Parser::HandleReturn()
 {
     Lexeme lexeme = LexerCheckedTop();
     spExpression expr = Expr();
-    lexeme = LexerCheckedPop();
+    LexerCheckedPop();
     return expr;
 }
 
@@ -211,26 +211,26 @@ spExpression Parser::Factor()
     if(lexeme.Type() == Token::Number)
     {
         auto constant = _program->Table().CreateConstant(lexeme.Value());
-        lexeme = LexerCheckedPop();
+        LexerCheckedPop();
         return constant;
     }
     else if(lexeme.Type() == Token::ParenOpen)
     {
-        lexeme = LexerCheckedPop();
+        LexerCheckedPop();
         auto expr = Expr();
-        lexeme = LexerCheckedPop();
+        LexerCheckedPop();
         return expr;
     }
     else if(lexeme.Type() == Token::Minus)
     {
-        lexeme = LexerCheckedPop();
+        LexerCheckedPop();
         FunctionInfo function("-", Operations::unaryMinus);
         return std::make_shared<UnaryOperation>(function, Factor());
     }
     else if(lexeme.Type() == Token::Id)
     {
         auto prev = lexeme;
-        lexeme = LexerCheckedPop();
+        LexerCheckedPop();
         if (auto expr = _program->Table().FindArgument(prev.Name()))
             return expr;
 
