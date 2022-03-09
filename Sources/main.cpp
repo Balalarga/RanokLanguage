@@ -24,15 +24,8 @@ void PrintArgs(int argc, char** argv)
 int main(int argc, char** argv)
 {
     string file = "../CodeExamples/test1.txt";
-    if (argc != 2)
-    {
-        //cout << "Argument error: must be like: app.exe code.txt\n";
-        //return NextErrorCode();
-    }
-    else
-    {
+    if (argc == 2)
         file = argv[1];
-    }
 
     fstream codeFile(file);
     if (!codeFile)
@@ -40,25 +33,33 @@ int main(int argc, char** argv)
         cout << "Couldn't open file " << argv[1] << endl;
         return NextErrorCode();
     }
+
     stringstream stream;
     stream << codeFile.rdbuf();
     codeFile.close();
 
     string code = stream.str();
 
-    Lexer lexer;
-    lexer.Process(code);
-
     Parser parser;
-    Program program = parser.Parse(lexer);
-    queue<pair<int, spExpression>> nodes;
-    program.Root()->Visit(nodes);
-    while(!nodes.empty())
+    Program program = parser.Parse(Lexer::CreateFrom(code));
+    cout << "\n\n";
+    if (program.Root())
     {
-        auto& top = nodes.front();
-        cout<<top.second->name<<endl;
-        nodes.pop();
+        queue<pair<int, spExpression>> nodes;
+        program.Root()->Visit(nodes);
+        cout << "Visiting AST";
+        while(!nodes.empty())
+        {
+            auto& top = nodes.front();
+            cout<<top.second->name<<endl;
+            nodes.pop();
+        }
     }
+    else
+    {
+        cout << "Root is empty";
+    }
+    cout << "\n\n";
 
     return 0;
 }

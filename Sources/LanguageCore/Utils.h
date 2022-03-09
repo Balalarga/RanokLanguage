@@ -17,6 +17,7 @@ public:
     Variant(const U& value):
         _data(value)
     {}
+    virtual ~Variant() = default;
 
     template<class To>
     bool Is() const { return std::holds_alternative<To>(_data); }

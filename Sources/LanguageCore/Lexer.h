@@ -19,23 +19,32 @@ struct Lexeme: public Variant<std::string, double>
         Variant<std::string, double>(value),
         type(token) {}
 
+
+    std::string ToPrintableString() const;
+
+
     Token type;
 };
+
 
 class Lexer
 {
 public:
     Lexer() = default;
 
+    static Lexer CreateFrom(const std::string& code);
+
     void Process(const std::string& code, bool forceClean = true);
+
     std::string GetError() const;
 
     Lexeme& Top();
     Lexeme& Pop(Token token = Token::None);
     bool Empty() const;
 
+
 protected:
-    virtual Lexeme NextLexeme(const std::string& data, unsigned& pivot);
+    Lexeme NextLexeme(const std::string& data, unsigned& pivot);
 
 
 private:

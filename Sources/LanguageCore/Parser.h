@@ -14,18 +14,21 @@ class Parser
 {
 public:
     Parser() = default;
-    Program Parse(Lexer& lexer);
+    Program Parse(Lexer lexer);
     
 
 private:
-    void HandleArgument(Lexer& lexer, SymbolsTable& symbolsTable);
-    void HandleConstant(Lexer& lexer, SymbolsTable& symbolsTable);
-    void HandleVariable(Lexer& lexer, SymbolsTable& symbolsTable);
-    spExpression HandleReturn(Lexer& lexer, SymbolsTable& symbolsTable);
+    Program* _program = nullptr;
+    Lexer* _lexer = nullptr;
+
+    void HandleArgument();
+    void HandleConstant();
+    void HandleVariable();
+    spExpression HandleReturn();
     
-    spExpression Term(Lexer& lexer, SymbolsTable& symbolsTable);
-    spExpression Factor(Lexer& lexer, SymbolsTable& symbolsTable);
-    spExpression Expr(Lexer& lexer, SymbolsTable& symbolsTable);
+    spExpression Term();
+    spExpression Factor();
+    spExpression Expr();
 
 };
 

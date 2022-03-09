@@ -5,6 +5,13 @@
 using namespace std;
 
 
+Lexer Lexer::CreateFrom(const std::string &code)
+{
+    Lexer lexer;
+    lexer.Process(code);
+    return lexer;
+}
+
 void Lexer::Process(const std::string &code, bool forceClean)
 {
     if (code.empty())
@@ -16,7 +23,9 @@ void Lexer::Process(const std::string &code, bool forceClean)
 
     unsigned pivot = 0;
     while(_lexemes.empty() || _lexemes.back().type != Token::End)
+    {
         _lexemes.push(NextLexeme(code, pivot));
+    }
 }
 
 Lexeme Lexer::NextLexeme(const std::string &data, unsigned int &pivot)
@@ -129,13 +138,7 @@ std::string Lexer::GetError() const
 
 Lexeme& Lexer::Pop(Token token)
 {
-    std::cout << "Poped: " << TokenToString(_lexemes.front().type)<<": ";
-
-    if (_lexemes.front().Is<std::string>())
-        std::cout << _lexemes.front().Get<std::string>();
-    else
-        std::cout << _lexemes.front().Get<double>();
-    std::cout << "\n";
+    std::cout << "Poped: " << _lexemes.front().ToPrintableString() << "\n";
     
     _lexemes.pop();
     
@@ -153,4 +156,18 @@ bool Lexer::Empty() const
 Lexeme& Lexer::Top()
 {
     return _lexemes.front();
+}
+
+string Lexeme::ToPrintableString() const
+{
+    stringstream res;
+
+    res << TokenToString(type) << ": ";
+
+    if (Is<std::string>())
+        res << Get<std::string>();
+    else
+        res << Get<double>();
+
+    return res.str();
 }
