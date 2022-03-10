@@ -15,7 +15,7 @@ class Parser
 public:
     Parser() = default;
     Program Parse(Lexer lexer);
-    
+
 
 private:
     Program* _program = nullptr;
@@ -28,6 +28,7 @@ private:
     void HandleConstant();
     void HandleVariable();
     void HandleFunctionArgs(std::vector<spExpression>& args);
+    void HandleFunctionArgs();
     spExpression HandleReturn();
     
     spExpression Term();

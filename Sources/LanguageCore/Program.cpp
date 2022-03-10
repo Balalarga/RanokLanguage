@@ -9,7 +9,12 @@ double Program::Process()
     return _root->GetValue();
 }
 
-void Program::Init(spExpression begin)
+void Program::Init(const spExpression& root)
 {
-    _root = begin;
+    _root = root;
+}
+
+spFunctionExpression Program::ToFunctionExpression()
+{
+    return spFunctionExpression();
 }

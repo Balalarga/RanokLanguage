@@ -98,6 +98,7 @@ std::string CodeGenerator::Generate(Program& program)
     for (auto& a: args)
         argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a->name));
 
+    code << DefineFunctions(program);
     code << EnterFunction(_languageDefinition.numberType, _languageDefinition.mainFuncName, fmt::format("{}", fmt::join(argsDef, ", ")));
     code << DefineVariables(program);
     code << fmt::format(_languageDefinition.returnDef, GetExpressionCode(program.Root().get())) << _languageDefinition.endLineDef;
@@ -108,7 +109,20 @@ std::string CodeGenerator::Generate(Program& program)
 
 std::string CodeGenerator::DefineFunctions(Program& program)
 {
-    return "";
+    std::stringstream code;
+    std::vector<CustomFunctionExpression*> usedCustomFuncs = program.GetAllOf<CustomFunctionExpression>();
+    std::vector<std::string> args;
+    for (auto& f: usedCustomFuncs)
+    {
+        args.clear();
+        for (auto& a: f->args)
+            args.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a.innerName));
+
+        code << EnterFunction(_languageDefinition.numberType, f->name, fmt::format("{}", fmt::join(args, ", ")));
+        code << fmt::format(_languageDefinition.returnDef, GetExpressionCode(f->root.get())) << _languageDefinition.endLineDef;
+        code << LeaveFunction();
+    }
+    return code.str();
 }
 
 std::string CodeGenerator::DefineVariables(Program& program)
@@ -169,6 +183,15 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
             params.push_back(GetExpressionCode(i.get()));
 
         return fmt::format("{0}({1})", expr->function.name, fmt::join(params, ", "));
+    }
+    else if (auto* expr = dynamic_cast<CustomFunctionExpression*>(expression))
+    {
+        std::vector<std::string> params;
+
+        for (auto& i: expr->args)
+            params.push_back(i.outerName);
+
+        return fmt::format("{0}({1})", expr->name, fmt::join(params, ", "));
     }
     return "";
 }

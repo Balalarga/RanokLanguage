@@ -175,3 +175,28 @@ void FunctionExpression::Visit(std::queue<std::pair<int, Expression*>>& containe
     for(auto& i: params)
         i->Visit(container, depth+1);
 }
+
+CustomFunctionExpression::CustomFunctionExpression(const std::string& name, spExpression root, const std::vector<Argument>&  args):
+    Expression(name),
+    root(std::move(root)),
+    args(args)
+{
+
+}
+
+void CustomFunctionExpression::Visit(std::queue<std::pair<int, Expression*>>& container, int depth)
+{
+    Expression::Visit(container, depth);
+    root->Visit(container, depth+1);
+}
+
+double CustomFunctionExpression::GetValue()
+{
+    return root->GetValue();
+}
+
+void CustomFunctionExpression::Reset()
+{
+    Expression::Reset();
+    root->Reset();
+}

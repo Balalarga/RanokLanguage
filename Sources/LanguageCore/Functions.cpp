@@ -107,7 +107,7 @@ CheckedResult<double> Floor(const std::vector<spExpression>& params)
     CheckParams(params, 1)
     return std::floor(params[0]->GetValue());
 }
-CheckedResult<double> Cut(const std::vector<spExpression>& params)
+CheckedResult<double> Functions::Cut(const std::vector<spExpression>& params)
 {
     CheckParams(params, 4)
     auto& var = params[0];
@@ -117,7 +117,7 @@ CheckedResult<double> Cut(const std::vector<spExpression>& params)
 
     /*
         var s1 = -(z - 0.5); // Верх
-        var s2 = z +0.5; // Снизу
+        var s2 = z + 0.5; // Снизу
         RETURN W & s1 & s2;
     */
     auto plane1 = (-axis->GetValue() + end->GetValue());
@@ -148,7 +148,7 @@ std::vector<FunctionInfo<FunctionExpression::FuncType>> Functions::_functions
         { "floor" , &Floor }
 };
 
-std::vector<CustomFunctionInfo<FunctionExpression::FuncType>> Functions::_customFunctions
+std::vector<std::shared_ptr<CustomFunction>> Functions::_customFunctions
 {
 
 };
@@ -167,15 +167,20 @@ const std::vector<FunctionInfo<FunctionExpression::FuncType>>& Functions::GetAll
     return _functions;
 }
 
-CustomFunctionInfo<FunctionExpression::FuncType>* Functions::FindCustom(const std::string& name)
+CustomFunction* Functions::FindCustom(const std::string& name)
 {
     for (auto& func : _customFunctions)
-        if (func.name == name)
-            return &func;
+        if (func->Info().name == name)
+            return func.get();
     return nullptr;
 }
 
-const std::vector<CustomFunctionInfo<FunctionExpression::FuncType>>& Functions::GetAllCustoms()
+const std::vector<std::shared_ptr<CustomFunction>>& Functions::GetAllCustoms()
 {
     return _customFunctions;
+}
+
+void Functions::AddCustom(const std::shared_ptr<CustomFunction>& function)
+{
+    _customFunctions.push_back(function);
 }

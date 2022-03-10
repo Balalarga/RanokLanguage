@@ -102,41 +102,41 @@ void Parser::HandleArgument()
 {
     Lexeme lexeme = LexerCheckedTop();
     spExpression expr;
-    while (lexeme.Type() != Token::Endline)
-    {
-        ArgumentExpression::Range range{-5, 5};
+    while (lexeme.Type() != Token::Endline) {
+        ArgumentExpression::Range range{-1, 1};
 
         lexeme = LexerCheckedPop(Token::Id);
         std::string name = lexeme.Name();
-        LexerCheckedPop(Token::ParenOpen);
-        bool negative = false;
         lexeme = LexerCheckedPop();
-        if (lexeme.Type() == Token::Minus)
+        if (lexeme.Type() == Token::ParenOpen)
         {
-            negative = true;
-            lexeme = LexerCheckedPop(Token::Number);
-        }
-        range.min = lexeme.Value();
-        lexeme = LexerCheckedPop();
-        if (lexeme.Type() == Token::Comma)
-        {
-            range.min = negative ? -range.min : range.min;
+            bool negative = false;
             lexeme = LexerCheckedPop();
-            negative = false;
             if (lexeme.Type() == Token::Minus)
             {
                 negative = true;
                 lexeme = LexerCheckedPop(Token::Number);
             }
-            range.max = negative ? -lexeme.Value() : lexeme.Value();
-            LexerCheckedPop();
+            range.min = lexeme.Value();
+            lexeme = LexerCheckedPop();
+            if (lexeme.Type() == Token::Comma) {
+                range.min = negative ? -range.min : range.min;
+                lexeme = LexerCheckedPop();
+                negative = false;
+                if (lexeme.Type() == Token::Minus) {
+                    negative = true;
+                    lexeme = LexerCheckedPop(Token::Number);
+                }
+                range.max = negative ? -lexeme.Value() : lexeme.Value();
+                LexerCheckedPop();
+            }
+            else
+            {
+                range.max = range.min;
+                range.min = -range.min;
+            }
+            lexeme = LexerCheckedPop();
         }
-        else
-        {
-            range.max = range.min;
-            range.min = -range.min;
-        }
-        lexeme = LexerCheckedPop();
         _program->Table().CreateArgument(name, range);
     }
 }
@@ -182,10 +182,10 @@ spExpression Parser::Expr()
            lexeme.Type() == Token::Cross ||
            lexeme.Type() == Token::Union)
     {
-        auto prev = lexeme;
-        lexeme = LexerCheckedPop();
-        FunctionInfo function(prev.Name(), Operations::BinaryFromString(prev.Name()));
+        LexerCheckedPop();
+        FunctionInfo function(lexeme.Name(), Operations::BinaryFromString(lexeme.Name()));
         node = std::make_shared<BinaryOperation>(function, node, Term());
+        lexeme = LexerCheckedTop();
     }
     return node;
 }
@@ -198,10 +198,10 @@ spExpression Parser::Term()
            lexeme.Type() == Token::Multiply ||
            lexeme.Type() == Token::Divide)
     {
-        auto prev = lexeme;
-        lexeme = LexerCheckedPop();
-        FunctionInfo function(prev.Name(), Operations::BinaryFromString(prev.Name()));
+        LexerCheckedPop();
+        FunctionInfo function(lexeme.Name(), Operations::BinaryFromString(lexeme.Name()));
         node = std::make_shared<BinaryOperation>(function, node, Term());
+        lexeme = LexerCheckedTop();
     }
     return node;
 }
@@ -245,6 +245,12 @@ spExpression Parser::Factor()
             return std::make_shared<FunctionExpression>(*func, args);
         }
 
+        if (auto func = Functions::FindCustom(prev.Name()))
+        {
+            HandleFunctionArgs();
+            return std::make_shared<CustomFunctionExpression>(func->Info().name, func->Root(), func->Args());
+        }
+
         if (auto expr = _program->Table().FindVariable(prev.Name()))
             return expr;
     }
@@ -257,6 +263,19 @@ void Parser::HandleFunctionArgs(std::vector<spExpression>& args)
     while (lexeme.Type() != Token::ParenClose)
     {
         args.push_back(Expr());
+        lexeme = LexerCheckedTop();
+        if (lexeme.Type() == Token::Comma)
+            lexeme = LexerCheckedPop();
+    }
+    LexerCheckedPop(Token::ParenClose);
+}
+
+void Parser::HandleFunctionArgs()
+{
+    Lexeme lexeme = LexerCheckedPop(Token::ParenOpen);
+    while (lexeme.Type() != Token::ParenClose)
+    {
+        Expr();
         lexeme = LexerCheckedTop();
         if (lexeme.Type() == Token::Comma)
             lexeme = LexerCheckedPop();

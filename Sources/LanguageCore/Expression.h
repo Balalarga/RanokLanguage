@@ -125,5 +125,27 @@ public:
 };
 using spFunctionExpression = std::shared_ptr<FunctionExpression>;
 
+class CustomFunctionExpression: public Expression
+{
+public:
+    struct Argument
+    {
+        Argument(const std::string& innerName, const std::string& outerName):
+            innerName(innerName),
+            outerName(outerName) {}
+        const std::string& innerName;
+        const std::string& outerName;
+    };
+
+    CustomFunctionExpression(const std::string& name, spExpression root, const std::vector<Argument>& args);
+
+    void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;
+    double GetValue() override;
+    void Reset() override;
+
+    const spExpression root;
+    const std::vector<Argument> args;
+};
+using spCustomFunctionExpression = std::shared_ptr<CustomFunctionExpression>;
 
 #endif //RANOKLANGUAGE_EXPRESSION_H
