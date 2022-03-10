@@ -13,25 +13,24 @@ using namespace std;
 
 std::map<std::string, std::string> CodeGenerator::defaultFunctionsMappings
 {
-    { "abs", "abs" },
+    { "abs", "fabs" },
     { "sqrt", "sqrt" },
     { "sin", "sin" },
     { "cos", "cos" },
     { "tan", "tan" },
-    { "arctan", "arctan" },
-    { "arcsin", "arcsin" },
-    { "arccos", "arccos" },
+    { "arctan", "atan" },
+    { "arcsin", "asin" },
+    { "arccos", "acos" },
     { "cosh", "cosh" },
     { "sinh", "sinh" },
     { "tanh", "tanh" },
     { "exp", "exp" },
-    { "ln", "ln" },
+    { "ln", "log" },
     { "log", "log" },
     { "log10", "log10" },
     { "log2", "log2" },
     { "ceil", "ceil" },
-    { "floor", "floor" },
-    { "cut", "cut" },
+    { "floor", "floor" }
 };
 
 std::map<std::string, std::string> CodeGenerator::defaultUnaryOperationsMappings
@@ -49,6 +48,13 @@ std::map<std::string, std::string> CodeGenerator::defaultBinaryOperationsMapping
         {"|", "{0} + {1} + sqrt(pow({0}, 2) + pow({1}, 2))"},
         {"&", "{0} + {1} - sqrt(pow({0}, 2) + pow({1}, 2))"},
 };
+
+CodeGenerator::CodeGenerator()
+{
+    _languageDefinition.functionsMapping = std::move(defaultFunctionsMappings);
+    _languageDefinition.unaryOperationsMapping = std::move(defaultUnaryOperationsMappings);
+    _languageDefinition.binaryOperationsMapping = std::move(defaultBinaryOperationsMappings);
+}
 
 CodeGenerator::CodeGenerator(const LanguageDefinition& langDef):
     _languageDefinition(std::move(langDef))

@@ -38,8 +38,7 @@ int main(int argc, char** argv)
     Program program = parser.Parse(Lexer::CreateFrom(code));
     if (program.Root())
     {
-        CodeGenerator::LanguageDefinition langDef;
-        CodeGenerator gener(langDef);
+        CodeGenerator gener;
         cout << gener.Generate(program);
         for (auto& a : program.Table().Arguments())
             a->SetValue(0);

@@ -29,6 +29,8 @@ public:
         std::map<std::string, std::string> unaryOperationsMapping;
         std::map<std::string, std::string> binaryOperationsMapping;
     };
+    
+    CodeGenerator();
     CodeGenerator(const LanguageDefinition& langDef);
     virtual ~CodeGenerator() = default;
 

@@ -13,7 +13,7 @@ using namespace std;
 #define CheckParams(params, count) \
     if (params.size() != count) \
     { \
-        cout << __FUNCTION__ << ": parameters error(must be )" << count << "\n"; \
+        cout << __FUNCTION__ << ": parameters error(must be " << count << ")\n"; \
         return false; \
     }
 
@@ -145,9 +145,14 @@ std::vector<FunctionInfo<FunctionExpression::FuncType>> Functions::_functions
         { "log10" , &Log10 },
         { "log2" , &Log2 },
         { "ceil" , &Ceil },
-        { "floor" , &Floor },
-        { "cut" , &Cut },
+        { "floor" , &Floor }
 };
+
+std::vector<CustomFunctionInfo<FunctionExpression::FuncType>> Functions::_customFunctions
+{
+
+};
+
 
 FunctionInfo<FunctionExpression::FuncType>* Functions::Find(const std::string &name)
 {
@@ -160,4 +165,17 @@ FunctionInfo<FunctionExpression::FuncType>* Functions::Find(const std::string &n
 const std::vector<FunctionInfo<FunctionExpression::FuncType>>& Functions::GetAll()
 {
     return _functions;
+}
+
+CustomFunctionInfo<FunctionExpression::FuncType>* Functions::FindCustom(const std::string& name)
+{
+    for (auto& func : _customFunctions)
+        if (func.name == name)
+            return &func;
+    return nullptr;
+}
+
+const std::vector<CustomFunctionInfo<FunctionExpression::FuncType>>& Functions::GetAllCustoms()
+{
+    return _customFunctions;
 }

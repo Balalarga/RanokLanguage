@@ -19,8 +19,13 @@ public:
     static FunctionInfo<FunctionExpression::FuncType>* Find(const std::string& name);
     static const std::vector<FunctionInfo<FunctionExpression::FuncType>>& GetAll();
 
+    static CustomFunctionInfo<FunctionExpression::FuncType>* FindCustom(const std::string& name);
+    static const std::vector<CustomFunctionInfo<FunctionExpression::FuncType>>& GetAllCustoms();
+
+
 private:
     static std::vector<FunctionInfo<FunctionExpression::FuncType>> _functions;
+    static std::vector<CustomFunctionInfo<FunctionExpression::FuncType>> _customFunctions;
 };
 
 #endif //RANOKLANGUAGE_FUNCTIONS_H
