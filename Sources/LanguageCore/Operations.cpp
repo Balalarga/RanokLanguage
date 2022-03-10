@@ -4,46 +4,33 @@
 
 #include "Operations.h"
 #include <cmath>
+#include <iostream>
 
 
-
-std::map<std::string, Operations::Unary> Operations::_unaryOperations
-{
-    {"-", Operations::unaryMinus},
-};
-std::map<std::string, Operations::Binary> Operations::_binaryOperations
-{
-    {"+", Operations::plus},
-    {"-", Operations::minus},
-    {"/", Operations::divides},
-    {"*", Operations::multiplies},
-    {"^", Operations::power},
-    {"|", Operations::RvUnion},
-    {"&", Operations::RvCross},
-};
-
-std::function<double(double)> Operations::unaryMinus = [](double v)
-{
-    return -v;
-};
-
-std::function<double(double, double)> Operations::plus = std::plus<double>();
-std::function<double(double, double)> Operations::minus = std::minus<double>();
-std::function<double(double, double)> Operations::divides = std::divides<double>();
-std::function<double(double, double)> Operations::multiplies = std::multiplies<double>();
-std::function<double(double, double)> Operations::power = [](double a, double b)
-{
-    return std::pow(a, b);
-};
-std::function<double(double, double)> Operations::RvCross = [](double a, double b)
+double Operations::RvCross(double a, double b)
 {
     return a + b - std::sqrt(std::pow(a, 2) + std::pow(b, 2));
 };
-std::function<double(double, double)> Operations::RvUnion = [](double a, double b)
+double Operations::RvUnion(double a, double b)
 {
     return a + b + std::sqrt(std::pow(a, 2) + std::pow(b, 2));
 };
 
+std::map<std::string, Operations::Unary> Operations::_unaryOperations
+{
+    {"-", [](double v) { return -v; }},
+};
+
+std::map<std::string, Operations::Binary> Operations::_binaryOperations
+{
+    {"+", std::plus<double>()},
+    {"-", std::minus<double>()},
+    {"/", std::divides<double>()},
+    {"*", std::multiplies<double>()},
+    {"^", [](double a, double b) { return std::pow(a, b); }},
+    {"|", Operations::RvUnion},
+    {"&", Operations::RvCross},
+};
 
 Operations::Unary Operations::UnaryFromString(const std::string& name)
 {
@@ -56,9 +43,10 @@ Operations::Unary Operations::UnaryFromString(const std::string& name)
 Operations::Binary Operations::BinaryFromString(const std::string& name)
 {
     auto it = _binaryOperations.find(name);
-    if (it == _binaryOperations.end())
-        return nullptr;
-    return it->second;
+    if (it != _binaryOperations.end())
+        return it->second;
+    std::cout << "No "<<name<<" operation\n";
+    return nullptr;
 }
 
 

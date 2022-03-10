@@ -36,27 +36,14 @@ int main(int argc, char** argv)
 
     Parser parser;
     Program program = parser.Parse(Lexer::CreateFrom(code));
-    cout << "\n\n";
     if (program.Root())
     {
-        queue<pair<int, Expression*>> nodes;
-        program.Root()->Visit(nodes);
-        cout << "Visiting AST\n";
-        while (!nodes.empty())
-        {
-            auto& top = nodes.front();
-            constexpr const char* depthPrefix = "  ";
-            for (int i = 1; i < top.first; ++i)
-                cout << depthPrefix;
-            cout << top.second->name << endl;
-            nodes.pop();
-        }
-        
         CodeGenerator::LanguageDefinition langDef;
         CodeGenerator gener(langDef);
-        cout << "Generate\n";
         cout << gener.Generate(program);
-        cout << "Done\n";
+        for (auto& a : program.Table().Arguments())
+            a->SetValue(0);
+        cout << "Result = " << program.Process() << "\n";
     }
     else
     {

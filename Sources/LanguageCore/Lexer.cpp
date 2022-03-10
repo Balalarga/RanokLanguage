@@ -141,8 +141,6 @@ Lexeme Lexer::Pop(Token token)
     if (_lexemes.empty())
         return {Token::None, "None"};
 
-    std::cout << "Poped: " << _lexemes.front().ToPrintableString() << "\n";
-    
     _lexemes.pop();
 
     if (_lexemes.empty())

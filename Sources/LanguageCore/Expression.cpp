@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+#define Debug(tag) std::cout << __FUNCTION__ << tag << "\n"
 
 Expression::Expression(const std::string& name):
     name(name)

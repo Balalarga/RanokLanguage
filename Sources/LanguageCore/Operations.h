@@ -16,20 +16,12 @@ public:
 
     static Unary UnaryFromString(const std::string& name);
     static const std::map<std::string, Unary>& GetUnaries();
-
-    static Unary unaryMinus;
-
     
     static Binary BinaryFromString(const std::string& name);
     static const std::map<std::string, Binary>& GetBinaries();
 
-    static Binary plus;
-    static Binary minus;
-    static Binary divides;
-    static Binary multiplies;
-    static Binary power;
-    static Binary RvCross;
-    static Binary RvUnion;
+    static double RvCross(double a, double b);
+    static double RvUnion(double a, double b);
 
 
 private:

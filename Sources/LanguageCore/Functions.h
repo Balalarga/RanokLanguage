@@ -19,7 +19,6 @@ public:
     static FunctionInfo<FunctionExpression::FuncType>* Find(const std::string& name);
     static const std::vector<FunctionInfo<FunctionExpression::FuncType>>& GetAll();
 
-
 private:
     static std::vector<FunctionInfo<FunctionExpression::FuncType>> _functions;
 };
