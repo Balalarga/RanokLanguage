@@ -4,13 +4,42 @@
 
 #include "CodeGenerator.h"
 #include "Functions.h"
+#include "Operations.h"
 
 #include <fmt/format.h>
 
 #include <iostream>
 using namespace std;
 
-std::map<std::string, std::string> CodeGenerator::defaultOperationsMappings
+std::map<std::string, std::string> CodeGenerator::defaultFunctionsMappings
+{
+    { "abs", "abs" },
+    { "sqrt", "sqrt" },
+    { "sin", "sin" },
+    { "cos", "cos" },
+    { "tan", "tan" },
+    { "arctan", "arctan" },
+    { "arcsin", "arcsin" },
+    { "arccos", "arccos" },
+    { "cosh", "cosh" },
+    { "sinh", "sinh" },
+    { "tanh", "tanh" },
+    { "exp", "exp" },
+    { "ln", "ln" },
+    { "log", "log" },
+    { "log10", "log10" },
+    { "log2", "log2" },
+    { "ceil", "ceil" },
+    { "floor", "floor" },
+    { "cut", "cut" },
+};
+
+std::map<std::string, std::string> CodeGenerator::defaultUnaryOperationsMappings
+{
+        {"-", "-{0}"},
+};
+
+std::map<std::string, std::string> CodeGenerator::defaultBinaryOperationsMappings
 {
         {"+", "{0} + {1}"},
         {"-", "{0} - {1}"},
@@ -21,95 +50,133 @@ std::map<std::string, std::string> CodeGenerator::defaultOperationsMappings
         {"&", "{0} + {1} - sqrt(pow({0}, 2) + pow({1}, 2))"},
 };
 
-CodeGenerator::CodeGenerator(std::map<std::string, std::string>&& functionsMappings,
-                             std::map<std::string, std::string>&& operationsMappings):
-        _functionsMapping(std::move(functionsMappings)),
-        _operationsMapping(std::move(operationsMappings))
+CodeGenerator::CodeGenerator(const LanguageDefinition& langDef):
+    _languageDefinition(std::move(langDef))
 {
-    _operationsMapping.merge(defaultOperationsMappings);
+    _languageDefinition.functionsMapping.merge(defaultFunctionsMappings);
+    _languageDefinition.unaryOperationsMapping.merge(defaultUnaryOperationsMappings);
+    _languageDefinition.binaryOperationsMapping.merge(defaultBinaryOperationsMappings);
+    
     CheckMappings();
-}
-
-void CodeGenerator::GetFunctionCode(const std::string& name, std::stringstream &code)
-{
-    code << _functionsMapping[name];
-}
-
-void CodeGenerator::GetOperationCode(const std::string& name, std::stringstream &code)
-{
-    code << _functionsMapping[name];
 }
 
 void CodeGenerator::CheckMappings()
 {
     for (auto& func: Functions::GetAll())
     {
-        if (_functionsMapping.find(func.name) == _functionsMapping.end())
+        if (_languageDefinition.functionsMapping.find(func.name) == _languageDefinition.functionsMapping.end())
             throw std::runtime_error("Couldn't find code for " + func.name + " function");
+    }
+
+    for (auto& oper : Operations::GetUnaries())
+    {
+        if (_languageDefinition.unaryOperationsMapping.find(oper.first) == _languageDefinition.unaryOperationsMapping.end())
+            throw std::runtime_error("Couldn't find code for " + oper.first + " unary operation");
+    }
+
+    for (auto& oper : Operations::GetBinaries())
+    {
+        if (_languageDefinition.binaryOperationsMapping.find(oper.first) == _languageDefinition.binaryOperationsMapping.end())
+            throw std::runtime_error("Couldn't find code for " + oper.first + " binary function");
     }
 }
 
-std::string CodeGenerator::Generate(spExpression root)
+std::string CodeGenerator::Generate(Program& program)
 {
     stringstream code;
     queue<pair<int, Expression*>> nodes;
-    root->Visit(nodes);
-    cout << "Visiting AST\n";
-    while (!nodes.empty())
-    {
-        if (auto expr = dynamic_cast<NumberExpression*>(nodes.front().second))
-        {
-            code << expr->GetValue();
-        }
-        else if (auto expr = dynamic_cast<ArgumentExpression*>(nodes.front().second))
-        {
-            code << expr->name;
-        }
-        else if (auto expr = dynamic_cast<VariableExpression*>(nodes.front().second))
-        {
-            code << expr->name;
-        }
-        else if (auto expr = dynamic_cast<UnaryOperation*>(nodes.front().second))
-        {
-            code << expr->operation.name;
-        }
-        else if (auto expr = dynamic_cast<BinaryOperation*>(nodes.front().second))
-        {
-            expr->leftChild
-        }
-        else if (auto expr = dynamic_cast<FunctionExpression*>(nodes.front().second))
-        {
+    program.Root()->Visit(nodes);
+    
+    std::vector<std::string> argsDef;
+    const auto& args = program.Table().Arguments();
+    for (auto& a: args)
+        argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a->name));
 
-        }
-    }
+    code << EnterFunction(_languageDefinition.numberType, _languageDefinition.mainFuncName, fmt::format("{}", fmt::join(argsDef, ", ")));
+    code << DefineVariables(program);
+    code << fmt::format(_languageDefinition.returnDef, GetExpressionCode(program.Root().get())) << _languageDefinition.endLineDef;
+    code << LeaveFunction();
 
     return code.str();
 }
 
-void CodeGenerator::GetExpressionCode(Expression*& expression, std::stringstream &code)
+std::string CodeGenerator::DefineFunctions(Program& program)
 {
-    if (auto expr = dynamic_cast<NumberExpression*>(expression))
-    {
-        code << expr->name;
-    }
-    else if (auto expr = dynamic_cast<ArgumentExpression*>(expression))
-    {
-        code << expr->name;
-    }
-    else if (auto expr = dynamic_cast<VariableExpression*>(expression))
-    {
-        code << expr->name;
-    }
-    else if (auto expr = dynamic_cast<UnaryOperation*>(expression))
-    {
-        code << expr->operation.name;
-    }
-    else if (auto expr = dynamic_cast<BinaryOperation*>(expression))
-    {
-        code << fmt::format(GetOperationCode());
-    }
-    else if (auto expr = dynamic_cast<FunctionExpression*>(expression))
-    {
-        code << expr->function.name;
-    }
+    return "";
 }
+
+std::string CodeGenerator::DefineVariables(Program& program)
+{
+    stringstream varCode;
+    for (auto& var: program.Table().Variables())
+    {
+        varCode << fmt::format(_languageDefinition.varDefinition, _languageDefinition.numberType, var->name, GetExpressionCode(var->child.get()));
+        varCode << _languageDefinition.endLineDef;
+    }
+    return varCode.str();
+}
+
+const std::string& CodeGenerator::GetFunctionCode(const std::string& name) const
+{
+    return _languageDefinition.functionsMapping.at(name);
+}
+
+const std::string& CodeGenerator::GetUnaryOperationCode(const std::string& name) const
+{
+    return _languageDefinition.unaryOperationsMapping.at(name);
+}
+
+const std::string& CodeGenerator::GetBinaryOperationCode(const std::string& name) const
+{
+    return _languageDefinition.binaryOperationsMapping.at(name);
+}
+
+std::string CodeGenerator::GetExpressionCode(Expression* expression)
+{
+    if (auto* expr = dynamic_cast<NumberExpression*>(expression))
+    {
+        return expr->name;
+    }
+    else if (auto* expr = dynamic_cast<ArgumentExpression*>(expression))
+    {
+        return expr->name;
+    }
+    else if (auto* expr = dynamic_cast<VariableExpression*>(expression))
+    {
+        return expr->name;
+    }
+    else if (auto* expr = dynamic_cast<UnaryOperation*>(expression))
+    {
+        return fmt::format(GetUnaryOperationCode(expr->operation.name), GetExpressionCode(expr->child.get()));
+    }
+    else if (auto* expr = dynamic_cast<BinaryOperation*>(expression))
+    {
+        return fmt::format(GetBinaryOperationCode(expr->operation.name),
+            GetExpressionCode(expr->leftChild.get()),
+            GetExpressionCode(expr->rightChild.get()));
+    }
+    else if (auto* expr = dynamic_cast<FunctionExpression*>(expression))
+    {
+        std::vector<std::string> params;
+        
+        for (auto& i: expr->params)
+            params.push_back(GetExpressionCode(i.get()));
+
+        return fmt::format("{0}({1})", expr->function.name, fmt::join(params, ", "));
+    }
+    return "";
+}
+
+std::string CodeGenerator::LeaveFunction()
+{
+    return _languageDefinition.codeBlock.second;
+}
+
+std::string CodeGenerator::EnterFunction(const std::string& returnType,
+                                         const std::string& name,
+                                         const std::string& params)
+{
+    return fmt::format(_languageDefinition.funcSignature, returnType, name, params) +
+           _languageDefinition.codeBlock.first;
+}
+

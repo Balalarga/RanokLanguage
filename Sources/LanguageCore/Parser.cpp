@@ -184,7 +184,7 @@ spExpression Parser::Expr()
     {
         auto prev = lexeme;
         lexeme = LexerCheckedPop();
-        FunctionInfo function(prev.Name(), Operations::FromString(prev.Name()));
+        FunctionInfo function(prev.Name(), Operations::BinaryFromString(prev.Name()));
         node = std::make_shared<BinaryOperation>(function, node, Term());
     }
     return node;
@@ -200,7 +200,7 @@ spExpression Parser::Term()
     {
         auto prev = lexeme;
         lexeme = LexerCheckedPop();
-        FunctionInfo function(prev.Name(), Operations::FromString(prev.Name()));
+        FunctionInfo function(prev.Name(), Operations::BinaryFromString(prev.Name()));
         node = std::make_shared<BinaryOperation>(function, node, Term());
     }
     return node;
@@ -225,7 +225,7 @@ spExpression Parser::Factor()
     else if(lexeme.Type() == Token::Minus)
     {
         LexerCheckedPop();
-        FunctionInfo function("-", Operations::unaryMinus);
+        FunctionInfo function(lexeme.Name(), Operations::UnaryFromString(lexeme.Name()));
         return std::make_shared<UnaryOperation>(function, Factor());
     }
     else if(lexeme.Type() == Token::Id)

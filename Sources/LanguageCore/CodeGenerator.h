@@ -5,34 +5,61 @@
 #ifndef RANOKLANGUAGE_CODEGENERATOR_H
 #define RANOKLANGUAGE_CODEGENERATOR_H
 
-#include "Expression.h"
+#include "Program.h"
 
 #include <map>
 #include <sstream>
 
 
+
 class CodeGenerator
 {
 public:
-    CodeGenerator(std::map<std::string, std::string>&& functionsMappings,
-                  std::map<std::string, std::string>&& operationsMappings = {});
+    struct LanguageDefinition
+    {
+        std::string mainFuncName = "__main";
+        std::string numberType = "double";
+        std::string returnDef = "return {0}";
+        std::string endLineDef = ";\n";
+        std::string funcSignature = "{0} {1}({2})";
+        std::string varDefinition = "{0} {1} = {2}";
+        std::pair<std::string, std::string> codeBlock = {"\n{\n", "}\n"};
+
+        std::map<std::string, std::string> functionsMapping;
+        std::map<std::string, std::string> unaryOperationsMapping;
+        std::map<std::string, std::string> binaryOperationsMapping;
+    };
+    CodeGenerator(const LanguageDefinition& langDef);
     virtual ~CodeGenerator() = default;
 
-    virtual std::string Generate(spExpression root);
+    virtual std::string Generate(Program& program);
+
+    inline const LanguageDefinition& GetLanguageDefinition() const { return _languageDefinition; };
 
 
 protected:
-    void GetFunctionCode(const std::string& name, std::stringstream& code);
-    void GetOperationCode(const std::string& name, std::stringstream& code);
-    void GetExpressionCode(Expression*& expression, std::stringstream &code);
+    std::string DefineFunctions(Program& program);
+    std::string DefineVariables(Program& program);
+
+    const std::string& GetFunctionCode(const std::string& name) const;
+    const std::string& GetUnaryOperationCode(const std::string& name) const;
+    const std::string& GetBinaryOperationCode(const std::string& name) const;
+    std::string GetExpressionCode(Expression* expression);
+
+    std::string EnterFunction(const std::string& returnType,
+                              const std::string& name,
+                              const std::string& params);
+    std::string LeaveFunction();
+
 
 private:
     void CheckMappings();
 
-    std::map<std::string, std::string> _functionsMapping;
+    LanguageDefinition _languageDefinition;
 
-    std::map<std::string, std::string> _operationsMapping;
-    static std::map<std::string, std::string> defaultOperationsMappings;
+    static std::map<std::string, std::string> defaultFunctionsMappings;
+    static std::map<std::string, std::string> defaultUnaryOperationsMappings;
+    static std::map<std::string, std::string> defaultBinaryOperationsMappings;
 };
 
 

@@ -4,9 +4,9 @@
 
 #include "LanguageCore/Lexer.h"
 #include "LanguageCore/Parser.h"
+#include "LanguageCore/CodeGenerator.h"
 
 using namespace std;
-
 
 int& NextErrorCode()
 {
@@ -51,11 +51,18 @@ int main(int argc, char** argv)
             cout << top.second->name << endl;
             nodes.pop();
         }
+        
+        CodeGenerator::LanguageDefinition langDef;
+        CodeGenerator gener(langDef);
+        cout << "Generate\n";
+        cout << gener.Generate(program);
+        cout << "Done\n";
     }
     else
     {
         cout << "Root is empty";
     }
+    
 
     return 0;
 }

@@ -5,20 +5,34 @@
 #include <map>
 #include <functional>
 
+
 class Operations
 {
 public:
     Operations() = delete;
 
-    static std::function<double(double)> unaryMinus;
-    
-    static std::function<double(double, double)> plus;
-    static std::function<double(double, double)> minus;
-    static std::function<double(double, double)> divides;
-    static std::function<double(double, double)> multiplies;
-    static std::function<double(double, double)> power;
-    static std::function<double(double, double)> RvCross;
-    static std::function<double(double, double)> RvUnion;
+    using Unary = std::function<double(double)>;
+    using Binary = std::function<double(double, double)>;
 
-    static std::function<double(double, double)> FromString(const std::string& name);
+    static Unary UnaryFromString(const std::string& name);
+    static const std::map<std::string, Unary>& GetUnaries();
+
+    static Unary unaryMinus;
+
+    
+    static Binary BinaryFromString(const std::string& name);
+    static const std::map<std::string, Binary>& GetBinaries();
+
+    static Binary plus;
+    static Binary minus;
+    static Binary divides;
+    static Binary multiplies;
+    static Binary power;
+    static Binary RvCross;
+    static Binary RvUnion;
+
+
+private:
+    static std::map<std::string, Unary> _unaryOperations;
+    static std::map<std::string, Binary> _binaryOperations;
 };

@@ -6,6 +6,22 @@
 #include <cmath>
 
 
+
+std::map<std::string, Operations::Unary> Operations::_unaryOperations
+{
+    {"-", Operations::unaryMinus},
+};
+std::map<std::string, Operations::Binary> Operations::_binaryOperations
+{
+    {"+", Operations::plus},
+    {"-", Operations::minus},
+    {"/", Operations::divides},
+    {"*", Operations::multiplies},
+    {"^", Operations::power},
+    {"|", Operations::RvUnion},
+    {"&", Operations::RvCross},
+};
+
 std::function<double(double)> Operations::unaryMinus = [](double v)
 {
     return -v;
@@ -29,28 +45,29 @@ std::function<double(double, double)> Operations::RvUnion = [](double a, double 
 };
 
 
-std::function<double(double, double)> Operations::FromString(const std::string& name)
+Operations::Unary Operations::UnaryFromString(const std::string& name)
 {
-    if (name == "+")
-        return plus;
+    auto it = _unaryOperations.find(name);
+    if (it == _unaryOperations.end())
+        return nullptr;
+    return it->second;
+}
 
-    if (name == "-")
-        return minus;
+Operations::Binary Operations::BinaryFromString(const std::string& name)
+{
+    auto it = _binaryOperations.find(name);
+    if (it == _binaryOperations.end())
+        return nullptr;
+    return it->second;
+}
 
-    if (name == "/")
-        return divides;
 
-    if (name == "*")
-        return multiplies;
+const std::map<std::string, Operations::Binary>& Operations::GetBinaries()
+{
+    return _binaryOperations;
+}
 
-    if (name == "^")
-        return power;
-
-    if (name == "|")
-        return RvUnion;
-
-    if (name == "&")
-        return RvCross;
-
-    return nullptr;
+const std::map<std::string, Operations::Unary>& Operations::GetUnaries()
+{
+    return _unaryOperations;
 }
