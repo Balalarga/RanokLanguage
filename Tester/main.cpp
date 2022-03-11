@@ -2,10 +2,9 @@
 #include <fstream>
 #include <sstream>
 
-#include "LanguageCore/Lexer.h"
-#include "LanguageCore/Parser.h"
-#include "LanguageCore/Functions.h"
-#include "LanguageCore/CodeGenerator.h"
+#include "Ranok/LanguageCore/Parser.h"
+#include "Ranok/LanguageCore/Functions.h"
+#include "Ranok/LanguageCore/CodeGenerator.h"
 
 using namespace std;
 
@@ -32,7 +31,7 @@ std::map<std::string, std::string> InitCustomFunctions()
 
 int main(int argc, char **argv)
 {
-    string file = "../CodeExamples/test1.txt";
+    string file = "../../CodeExamples/test1.txt";
     if (argc == 2)
         file = argv[1];
 
