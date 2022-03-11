@@ -20,6 +20,10 @@ struct FunctionInfo: public std::function<T>
     }
 
     const std::string name;
+    bool operator<(const FunctionInfo<T>& oth) const 
+    {
+        return name < oth.name;
+    }
 };
 
 

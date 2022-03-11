@@ -17,10 +17,7 @@ CustomFunction::CustomFunction(const FunctionInfo<FunctionExpression::FuncType> 
 {
     Parser parser;
     Program program = parser.Parse(Lexer::CreateFrom(code));
-    for(auto& a: program.Table().Arguments())
-    {
-
-    }
+    _args = program.Table().Arguments();
     _root = program.Root();
 }
 

@@ -19,13 +19,13 @@ public:
 
     inline const FunctionInfo<FunctionExpression::FuncType>& Info() const { return _info; }
     inline spExpression Root() { return _root; }
-    inline const std::vector<CustomFunctionExpression::Argument>& Args() const { return _args; }
+    inline const std::vector<spArgumentExpression>& Args() const { return _args; }
 
 
 private:
     FunctionInfo<FunctionExpression::FuncType> _info;
     spExpression _root;
-    std::vector<CustomFunctionExpression::Argument> _args;
+    std::vector<spArgumentExpression> _args;
 };
 
 /** Used for function without c++ representation */

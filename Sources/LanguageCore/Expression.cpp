@@ -151,7 +151,7 @@ FunctionExpression::FunctionExpression(const FunctionInfo<FuncType>& function, c
 
 double FunctionExpression::GetValue()
 {
-    if (!Computed())
+    if (!Computed() && function)
     {
         CheckedResult<double> result = function(params);
         if (!result.Ok())
@@ -176,27 +176,11 @@ void FunctionExpression::Visit(std::queue<std::pair<int, Expression*>>& containe
         i->Visit(container, depth+1);
 }
 
-CustomFunctionExpression::CustomFunctionExpression(const std::string& name, spExpression root, const std::vector<Argument>&  args):
-    Expression(name),
-    root(std::move(root)),
-    args(args)
+CustomFunctionExpression::CustomFunctionExpression(const FunctionInfo<FuncType>& function,
+                                                   spExpression root,
+                                                   const std::vector<spExpression>& args):
+    FunctionExpression(function, args),
+    root(std::move(root))
 {
 
-}
-
-void CustomFunctionExpression::Visit(std::queue<std::pair<int, Expression*>>& container, int depth)
-{
-    Expression::Visit(container, depth);
-    root->Visit(container, depth+1);
-}
-
-double CustomFunctionExpression::GetValue()
-{
-    return root->GetValue();
-}
-
-void CustomFunctionExpression::Reset()
-{
-    Expression::Reset();
-    root->Reset();
 }

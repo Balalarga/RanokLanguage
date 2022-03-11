@@ -247,8 +247,9 @@ spExpression Parser::Factor()
 
         if (auto func = Functions::FindCustom(prev.Name()))
         {
-            HandleFunctionArgs();
-            return std::make_shared<CustomFunctionExpression>(func->Info().name, func->Root(), func->Args());
+            std::vector<spExpression> args;
+            HandleFunctionArgs(args);
+            return std::make_shared<CustomFunctionExpression>(func->Info(), func->Root(), args);
         }
 
         if (auto expr = _program->Table().FindVariable(prev.Name()))

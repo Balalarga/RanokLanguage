@@ -24,8 +24,8 @@ std::map<std::string, std::string> InitCustomFunctions()
     s2 = (a - s);
     return f & s1 & s2;)";
     functionsMapping["cut"] = funcCode;
-//    Functions::AddCustom(std::make_shared<PureCustomFunction>("cut", funcCode));
-    Functions::AddCustom(std::make_shared<CustomFunction>(info, funcCode));
+    Functions::AddCustom(std::make_shared<PureCustomFunction>("cut", funcCode));
+    // Functions::AddCustom(std::make_shared<CustomFunction>(info, funcCode));
 
     return functionsMapping;
 }
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 
     fstream codeFile(file);
     if (!codeFile) {
-        cout << "Couldn't open file " << argv[1] << endl;
+        cout << "Couldn't open file " << file << endl;
         return NextErrorCode();
     }
 
