@@ -11,6 +11,9 @@
 #include <sstream>
 
 
+#define ConstructSetter(Class, FuncName, Var) \
+    inline Class& FuncName(const decltype(Class::Var)& value) { Var = value; return *this; }
+
 
 class CodeGenerator
 {
@@ -28,6 +31,17 @@ public:
         std::map<std::string, std::string> functionsMapping;
         std::map<std::string, std::string> unaryOperationsMapping;
         std::map<std::string, std::string> binaryOperationsMapping;
+
+
+        ConstructSetter(LanguageDefinition, MainFuncName, mainFuncName);
+        ConstructSetter(LanguageDefinition, FarDefinition, numberType);
+        ConstructSetter(LanguageDefinition, FuncSignature, returnDef);
+        ConstructSetter(LanguageDefinition, EndLine, endLineDef);
+        ConstructSetter(LanguageDefinition, ReturnDef, funcSignature);
+        ConstructSetter(LanguageDefinition, NumberType, varDefinition);
+        ConstructSetter(LanguageDefinition, Functions, functionsMapping);
+        ConstructSetter(LanguageDefinition, UnaryOperations, unaryOperationsMapping);
+        ConstructSetter(LanguageDefinition, BinaryOperations, binaryOperationsMapping);
     };
     
     CodeGenerator();
