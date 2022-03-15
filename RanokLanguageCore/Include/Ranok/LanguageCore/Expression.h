@@ -57,6 +57,7 @@ public:
     };
 
     ArgumentExpression(const std::string& name, const Range& range);
+    void Reset() override;
 
     const Range range;
 };

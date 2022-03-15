@@ -53,6 +53,11 @@ ArgumentExpression::ArgumentExpression(const std::string& name, const Range& ran
     
 }
 
+void ArgumentExpression::Reset()
+{
+
+}
+
 VariableExpression::VariableExpression(const std::string& name, spExpression child):
     Expression(name),
     child(child)

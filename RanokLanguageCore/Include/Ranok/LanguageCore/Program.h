@@ -7,6 +7,8 @@
 
 #include "Expression.h"
 #include "SymbolsTable.h"
+#include <iostream>
+
 
 class Program
 {
@@ -19,7 +21,6 @@ public:
     inline SymbolsTable& Table() { return _symbolsTable; }
     inline const spExpression& Root() { return _root; }
 
-    spFunctionExpression ToFunctionExpression();
     template<class T>
     std::vector<T*> GetAllOf()
     {
@@ -52,6 +53,29 @@ public:
         return res;
     }
 
+    void Dump()
+    {
+        std::queue<std::pair<int, Expression *>> nodes;
+        _root->Visit(nodes);
+        std::cout << "----------------------------Program dump---------------------------------\n";
+        while (!nodes.empty())
+        {
+            std::string frontSpacing;
+            auto &top = nodes.front();
+            for (int i = 1; i < top.first; ++i)
+                frontSpacing += "    ";
+
+            std::cout << frontSpacing << "Node: " << top.second->name << "\n";
+            frontSpacing += "  ";
+
+            std::cout << frontSpacing << "Computed: " << top.second->Computed() << "\n";
+            if (top.second->Computed())
+                std::cout << frontSpacing << "Value: " << top.second->GetValue() << "\n";
+
+            nodes.pop();
+        }
+        std::cout << "-------------------------------------------------------------------------\n";
+    }
 
 
 private:
