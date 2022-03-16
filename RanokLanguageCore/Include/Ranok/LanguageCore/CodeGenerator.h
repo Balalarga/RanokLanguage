@@ -34,11 +34,11 @@ public:
 
 
         ConstructSetter(LanguageDefinition, MainFuncName, mainFuncName);
-        ConstructSetter(LanguageDefinition, FarDefinition, numberType);
-        ConstructSetter(LanguageDefinition, FuncSignature, returnDef);
+        ConstructSetter(LanguageDefinition, NumberType, numberType);
+        ConstructSetter(LanguageDefinition, FuncSignature, funcSignature);
         ConstructSetter(LanguageDefinition, EndLine, endLineDef);
-        ConstructSetter(LanguageDefinition, ReturnDef, funcSignature);
-        ConstructSetter(LanguageDefinition, NumberType, varDefinition);
+        ConstructSetter(LanguageDefinition, ReturnDef, returnDef);
+        ConstructSetter(LanguageDefinition, VarDefinition, varDefinition);
         ConstructSetter(LanguageDefinition, Functions, functionsMapping);
         ConstructSetter(LanguageDefinition, UnaryOperations, unaryOperationsMapping);
         ConstructSetter(LanguageDefinition, BinaryOperations, binaryOperationsMapping);
