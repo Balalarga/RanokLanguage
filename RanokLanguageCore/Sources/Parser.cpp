@@ -169,7 +169,6 @@ spExpression Parser::HandleReturn()
 {
     Lexeme lexeme = LexerCheckedTop();
     spExpression expr = Expr();
-    LexerCheckedPop();
     return expr;
 }
 
