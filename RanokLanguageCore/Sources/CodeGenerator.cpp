@@ -111,25 +111,18 @@ std::string CodeGenerator::DefineFunctions(Program& program)
 {
     std::stringstream code;
     std::set<std::string> namesBuffer;
-    std::vector<CustomFunction*> usedCustomFuncs;
-    for (CustomFunctionExpression*& funcExpr :program.GetAllOf<CustomFunctionExpression>())
-    {
-        if (namesBuffer.find(funcExpr->name) == namesBuffer.end())
-        {
-            namesBuffer.insert(funcExpr->name);
-            usedCustomFuncs.push_back(Functions::FindCustom(funcExpr->name));
-        }
-    }
+    std::vector<CustomFunction> usedCustomFuncs = Functions::GetAllCustoms();
 
     std::vector<std::string> argsDef;
     for (auto& func: usedCustomFuncs)
     {
         argsDef.clear();
-        for (auto& a: func->Args())
+        for (auto& a: func.Args())
             argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a->name));
 
-        code << EnterFunction(_languageDefinition.numberType, func->Info().name, fmt::format("{}", fmt::join(argsDef, ", ")));
-        code << fmt::format(_languageDefinition.returnDef, GetExpressionCode(func->Root().get())) << _languageDefinition.endLineDef;
+        code << EnterFunction(_languageDefinition.numberType, func.Info().name, fmt::format("{}", fmt::join(argsDef, ", ")));
+        code << DefineVariables(func.GetProgram());
+        code << fmt::format(_languageDefinition.returnDef, GetExpressionCode(func.Root().get())) << _languageDefinition.endLineDef;
         code << LeaveFunction();
     }
     return code.str();

@@ -19,15 +19,15 @@ public:
     static const std::vector<FunctionInfo<FunctionExpression::FuncType>>& GetAll();
 
     static CustomFunction* FindCustom(const std::string& name);
-    static const std::vector<std::shared_ptr<CustomFunction>>& GetAllCustoms();
-    static void AddCustom(const std::shared_ptr<CustomFunction>& function);
+    static const std::vector<CustomFunction>& GetAllCustoms();
+    static void AddCustom(const CustomFunction& function);
 
     static CheckedResult<double> Cut(const std::vector<spExpression>& params);
 
 
 private:
     static std::vector<FunctionInfo<FunctionExpression::FuncType>> _functions;
-    static std::vector<std::shared_ptr<CustomFunction>> _customFunctions;
+    static std::vector<CustomFunction> _customFunctions;
 };
 
 #endif //RANOKLANGUAGE_FUNCTIONS_H

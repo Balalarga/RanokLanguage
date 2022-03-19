@@ -148,7 +148,7 @@ std::vector<FunctionInfo<FunctionExpression::FuncType>> Functions::_functions
         { "floor" , &Floor }
 };
 
-std::vector<std::shared_ptr<CustomFunction>> Functions::_customFunctions
+std::vector<CustomFunction> Functions::_customFunctions
 {
 
 };
@@ -170,17 +170,17 @@ const std::vector<FunctionInfo<FunctionExpression::FuncType>>& Functions::GetAll
 CustomFunction* Functions::FindCustom(const std::string& name)
 {
     for (auto& func : _customFunctions)
-        if (func->Info().name == name)
-            return func.get();
+        if (func.Info().name == name)
+            return &func;
     return nullptr;
 }
 
-const std::vector<std::shared_ptr<CustomFunction>>& Functions::GetAllCustoms()
+const std::vector<CustomFunction>& Functions::GetAllCustoms()
 {
     return _customFunctions;
 }
 
-void Functions::AddCustom(const std::shared_ptr<CustomFunction>& function)
+void Functions::AddCustom(const CustomFunction& function)
 {
     _customFunctions.push_back(function);
 }

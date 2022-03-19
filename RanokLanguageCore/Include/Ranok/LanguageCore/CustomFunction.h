@@ -7,12 +7,14 @@
 
 #include "Expression.h"
 #include "FunctionInfo.h"
+#include "Parser.h"
 
 
 class CustomFunction
 {
 public:
     CustomFunction(const FunctionInfo<FunctionExpression::FuncType>& info, const std::string &code);
+    CustomFunction(const std::string& name, const std::string &code);
     virtual ~CustomFunction() = default;
 
     void SetRoot(spExpression& root);
@@ -21,18 +23,22 @@ public:
     inline spExpression Root() { return _root; }
     inline const std::vector<spArgumentExpression>& Args() const { return _args; }
 
+    inline const std::string& Name() const { return _info.name; }
+    inline const std::string& Code() const { return _code; }
+
+    inline Program& GetProgram() { return _program; };
+
+
+    static std::string ToString(const CustomFunction& func);
+    static CustomFunction FromString(const std::string& str, int &endId);
+
 
 private:
     FunctionInfo<FunctionExpression::FuncType> _info;
     spExpression _root;
     std::vector<spArgumentExpression> _args;
-};
-
-/** Used for function without c++ representation */
-class PureCustomFunction: public CustomFunction
-{
-public:
-    PureCustomFunction(const std::string& name, const std::string &code);
+    Program _program;
+    const std::string _code;
 };
 
 #endif //RANOKLANGUAGE_CUSTOMFUNCTION_H
