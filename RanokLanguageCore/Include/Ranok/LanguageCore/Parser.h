@@ -16,10 +16,12 @@ public:
     Parser() = default;
     Program Parse(Lexer lexer);
 
+    inline const std::string& Error() const { return _error; }
 
 private:
     Program* _program = nullptr;
     Lexer* _lexer = nullptr;
+    std::string _error;
 
     Lexeme LexerCheckedPop(Token token = Token::None);
     Lexeme LexerCheckedTop();

@@ -63,7 +63,7 @@ Program Parser::Parse(Lexer lexer)
         }
         else
         {
-            std::cout << "Unknown token " << tokenName << "\n";
+            _error = "Unknown token " + tokenName;
             break;
         }
         lexeme = LexerCheckedPop();
@@ -81,7 +81,7 @@ Lexeme Parser::LexerCheckedPop(Token token)
     }
     else
     {
-        std::cout << "Lexer is empty\n";
+        _error = "Lexer is empty";
         return {Token::None, "NONE"};
     }
 }
@@ -93,7 +93,7 @@ Lexeme Parser::LexerCheckedTop()
     }
     else
     {
-        std::cout << "Lexer is empty\n";
+        _error = "Lexer is empty";
         return {Token::None, "NONE"};
     }
 }

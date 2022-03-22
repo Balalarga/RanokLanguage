@@ -131,11 +131,6 @@ Lexeme Lexer::NextLexeme(const std::string &data, unsigned int &pivot)
     return {Token::Id, word};
 }
 
-std::string Lexer::GetError() const
-{
-    return _error;
-}
-
 Lexeme Lexer::Pop(Token token)
 {
     if (_lexemes.empty())
@@ -147,7 +142,7 @@ Lexeme Lexer::Pop(Token token)
         return {Token::None, "None"};
 
     if (token != Token::None && _lexemes.front().Type() != token)
-        std::cout<<"Error: Token is "<< TokenToString(_lexemes.front().Type()) <<"Expected "<< TokenToString(token)<<"\n";
+        _error = "Error: Token is " + TokenToString(_lexemes.front().Type()) + "Expected " + TokenToString(token);
 
     return _lexemes.front();
 }

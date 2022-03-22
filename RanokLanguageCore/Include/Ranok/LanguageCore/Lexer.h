@@ -51,7 +51,7 @@ public:
 
     void Process(const std::string& code, bool forceClean = true);
 
-    std::string GetError() const;
+    inline const std::string& Error() const { return _error; }
 
     Lexeme Top();
     Lexeme Pop(Token token = Token::None);
