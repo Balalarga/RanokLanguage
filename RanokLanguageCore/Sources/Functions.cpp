@@ -182,5 +182,6 @@ const std::vector<CustomFunction>& Functions::GetAllCustoms()
 
 void Functions::AddCustom(const CustomFunction& function)
 {
-    _customFunctions.push_back(function);
+    if (!FindCustom(function.Name()))
+        _customFunctions.push_back(function);
 }

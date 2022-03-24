@@ -35,18 +35,18 @@ std::map<std::string, std::string> CodeGenerator::defaultFunctionsMappings
 
 std::map<std::string, std::string> CodeGenerator::defaultUnaryOperationsMappings
 {
-        {"-", "-{0}"},
+    {"-", "-{0}"},
 };
 
 std::map<std::string, std::string> CodeGenerator::defaultBinaryOperationsMappings
 {
-        {"+", "{0} + {1}"},
-        {"-", "{0} - {1}"},
-        {"/", "{0} / {1}"},
-        {"*", "{0} * {1}"},
-        {"^", "pow({0}, {1})"},
-        {"|", "{0} + {1} + sqrt(pow({0}, 2) + pow({1}, 2))"},
-        {"&", "{0} + {1} - sqrt(pow({0}, 2) + pow({1}, 2))"},
+    {"+", "{0} + {1}"},
+    {"-", "{0} - {1}"},
+    {"/", "{0} / {1}"},
+    {"*", "{0} * {1}"},
+    {"^", "pow({0}, {1})"},
+    {"|", "{0} + {1} + sqrt(pow({0}, 2) + pow({1}, 2))"},
+    {"&", "{0} + {1} - sqrt(pow({0}, 2) + pow({1}, 2))"},
 };
 
 CodeGenerator::CodeGenerator()
@@ -59,9 +59,40 @@ CodeGenerator::CodeGenerator()
 CodeGenerator::CodeGenerator(const LanguageDefinition& langDef):
     _languageDefinition(std::move(langDef))
 {
-    _languageDefinition.functionsMapping.merge(defaultFunctionsMappings);
-    _languageDefinition.unaryOperationsMapping.merge(defaultUnaryOperationsMappings);
-    _languageDefinition.binaryOperationsMapping.merge(defaultBinaryOperationsMappings);
+    _languageDefinition.functionsMapping.merge(std::map<std::string, std::string>{
+                                                   { "abs", "fabs" },
+                                                   { "sqrt", "sqrt" },
+                                                   { "sin", "sin" },
+                                                   { "cos", "cos" },
+                                                   { "tan", "tan" },
+                                                   { "arctan", "atan" },
+                                                   { "arcsin", "asin" },
+                                                   { "arccos", "acos" },
+                                                   { "cosh", "cosh" },
+                                                   { "sinh", "sinh" },
+                                                   { "tanh", "tanh" },
+                                                   { "exp", "exp" },
+                                                   { "ln", "log" },
+                                                   { "log", "log" },
+                                                   { "log10", "log10" },
+                                                   { "log2", "log2" },
+                                                   { "ceil", "ceil" },
+                                                   { "floor", "floor" }
+                                               });
+    _languageDefinition.unaryOperationsMapping.merge(std::map<std::string, std::string>
+                                                     {
+                                                         {"-", "-{0}"},
+                                                     });
+    _languageDefinition.binaryOperationsMapping.merge(std::map<std::string, std::string>
+                                                      {
+                                                          {"+", "{0} + {1}"},
+                                                          {"-", "{0} - {1}"},
+                                                          {"/", "{0} / {1}"},
+                                                          {"*", "{0} * {1}"},
+                                                          {"^", "pow({0}, {1})"},
+                                                          {"|", "{0} + {1} + sqrt(pow({0}, 2) + pow({1}, 2))"},
+                                                          {"&", "{0} + {1} - sqrt(pow({0}, 2) + pow({1}, 2))"},
+                                                      });
     
     CheckMappings();
 }
@@ -175,8 +206,8 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
     else if (auto* expr = dynamic_cast<BinaryOperation*>(expression))
     {
         return fmt::format(GetBinaryOperationCode(expr->operation.name),
-            GetExpressionCode(expr->leftChild.get()),
-            GetExpressionCode(expr->rightChild.get()));
+                           GetExpressionCode(expr->leftChild.get()),
+                           GetExpressionCode(expr->rightChild.get()));
     }
     else if (auto* expr = dynamic_cast<FunctionExpression*>(expression))
     {
@@ -185,7 +216,7 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
         for (auto& i: expr->params)
             params.push_back(GetExpressionCode(i.get()));
 
-        return fmt::format("{0}({1})", expr->function.name, fmt::join(params, ", "));
+        return fmt::format("{0}({1})", GetFunctionCode(expr->function.name), fmt::join(params, ", "));
     }
     else if (auto* expr = dynamic_cast<CustomFunctionExpression*>(expression))
     {
@@ -209,6 +240,6 @@ std::string CodeGenerator::EnterFunction(const std::string& returnType,
                                          const std::string& params)
 {
     return fmt::format(_languageDefinition.funcSignature, returnType, name, params) +
-           _languageDefinition.codeBlock.first;
+            _languageDefinition.codeBlock.first;
 }
 
