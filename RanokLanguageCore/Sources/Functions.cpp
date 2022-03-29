@@ -4,8 +4,12 @@
 
 #include "Functions.h"
 #include "Operations.h"
+#include "Ranok/Utility/StringUtility.h"
+#include "Ranok/Utility/CheckedResult.h"
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <cmath>
 
 using namespace std;
@@ -153,6 +157,43 @@ std::vector<CustomFunction> Functions::_customFunctions
 
 };
 
+size_t InitialCustomFunctionsSize = 0;
+
+
+void Functions::InitCustomsFrom(const std::string &filepath)
+{
+    std::ifstream funcsFile(filepath);
+    if (funcsFile)
+    {
+        int startId = 0;
+        std::stringstream dataStream;
+        dataStream << funcsFile.rdbuf();
+        std::string data = StringUtility::Trim(dataStream.str());
+        while (startId < data.size())
+        {
+            std::string cutted = data.substr(startId);
+            Functions::AddCustom(CustomFunction::FromString(cutted, startId));
+        }
+
+        funcsFile.close();
+    }
+    InitialCustomFunctionsSize = _customFunctions.size();
+}
+
+void Functions::DumpCustomsOnDemandTo(const std::string &filepath)
+{
+    if (InitialCustomFunctionsSize == _customFunctions.size())
+        return;
+
+    std::ofstream file(filepath);
+    if (file)
+    {
+        for (auto& func: _customFunctions)
+            file << CustomFunction::ToString(func) << "\n";
+
+        file.close();
+    }
+}
 
 FunctionInfo<FunctionExpression::FuncType>* Functions::Find(const std::string &name)
 {

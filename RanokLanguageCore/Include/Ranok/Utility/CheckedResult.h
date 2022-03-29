@@ -2,8 +2,8 @@
 // Created by Balalarga on 06.03.2022.
 //
 
-#ifndef RANOKLANGUAGE_CHECKS_H
-#define RANOKLANGUAGE_CHECKS_H
+#ifndef RANOKLANGUAGE_CHECKED_RESULT_H
+#define RANOKLANGUAGE_CHECKED_RESULT_H
 
 template<class T>
 class CheckedResult
@@ -26,4 +26,4 @@ private:
     bool _check;
 };
 
-#endif //RANOKLANGUAGE_CHECKS_H
+#endif //RANOKLANGUAGE_CHECKED_RESULT_H

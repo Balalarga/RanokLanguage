@@ -15,6 +15,9 @@ class Functions
 public:
     Functions() = delete;
 
+    static void InitCustomsFrom(const std::string& filepath);
+    static void DumpCustomsOnDemandTo(const std::string& filepath);
+
     static FunctionInfo<FunctionExpression::FuncType>* Find(const std::string& name);
     static const std::vector<FunctionInfo<FunctionExpression::FuncType>>& GetAll();
 

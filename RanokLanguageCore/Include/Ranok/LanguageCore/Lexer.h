@@ -1,7 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include "Utils.h"
+#include "Ranok/Utility/CheckedResult.h"
 #include "Tokens.h"
 
 #include <queue>
