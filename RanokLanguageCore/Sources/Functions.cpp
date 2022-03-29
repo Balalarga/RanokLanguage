@@ -132,24 +132,24 @@ CheckedResult<double> Functions::Cut(const std::vector<spExpression>& params)
 
 std::vector<FunctionInfo<FunctionExpression::FuncType>> Functions::_functions
 {
-        { "abs" , &Abs },
-        { "sqrt" , &Sqrt },
-        { "sin", &Sin },
-        { "cos" , &Cos },
-        { "tan" , &Tan },
-        { "arctan" , &ArcTan },
-        { "arcsin" , &ArcSin },
-        { "arccos" , &ArcCos },
-        { "cosh" , &Cosh },
-        { "sinh" , &Sinh },
-        { "tanh" , &Tanh },
-        { "exp" , &Exp },
-        { "ln" , &Ln },
-        { "log" , &Log },
-        { "log10" , &Log10 },
-        { "log2" , &Log2 },
-        { "ceil" , &Ceil },
-        { "floor" , &Floor }
+        { "abs" , &Abs, "abs(number)" },
+        { "sqrt" , &Sqrt, "sqrt(number)" },
+        { "sin", &Sin, "sin(number)" },
+        { "cos" , &Cos, "cos(number)" },
+        { "tan" , &Tan, "tan(number)" },
+        { "arctan" , &ArcTan, "arctan(number)" },
+        { "arcsin" , &ArcSin, "arcsin(number)" },
+        { "arccos" , &ArcCos, "arccos(number)" },
+        { "cosh" , &Cosh, "cosh(number)" },
+        { "sinh" , &Sinh, "sinh(number)" },
+        { "tanh" , &Tanh, "tanh(number)" },
+        { "exp" , &Exp, "exp(number)" },
+        { "ln" , &Ln, "ln(number)" },
+        { "log" , &Log, "log(number)" },
+        { "log10" , &Log10, "log10(number)" },
+        { "log2" , &Log2, "log2(number)" },
+        { "ceil" , &Ceil, "ceil(number)" },
+        { "floor" , &Floor, "floor(number)" }
 };
 
 std::vector<CustomFunction> Functions::_customFunctions

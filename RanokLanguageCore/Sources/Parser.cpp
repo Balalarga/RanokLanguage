@@ -34,24 +34,24 @@ Program Parser::Parse(Lexer lexer)
 
         if (lexeme.Type() == Token::Id)
         {
-            if (CaseCompare(tokenName, "argument") ||
-                CaseCompare(tokenName, "arguments") ||
-                CaseCompare(tokenName, "args"))
+            if (CaseCompare(tokenName, "argument", true) ||
+                CaseCompare(tokenName, "arguments", true) ||
+                CaseCompare(tokenName, "args", true))
             {
                 HandleArgument();
             }
-            else if (CaseCompare(tokenName, "constant") ||
-                     CaseCompare(tokenName, "const"))
+            else if (CaseCompare(tokenName, "constant", true) ||
+                     CaseCompare(tokenName, "const", true))
             {
                 HandleConstant();
             }
-            else if(CaseCompare(tokenName, "return"))
+            else if(CaseCompare(tokenName, "return", true))
             {
                 LexerCheckedPop();
                 program.Init(HandleReturn());
             }
-            else if (CaseCompare(tokenName, "variable") ||
-                     CaseCompare(tokenName, "var"))
+            else if (CaseCompare(tokenName, "variable", true) ||
+                     CaseCompare(tokenName, "var", true))
             {
                 LexerCheckedPop();
                 HandleVariable();

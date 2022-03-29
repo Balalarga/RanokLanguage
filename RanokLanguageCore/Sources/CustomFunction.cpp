@@ -69,7 +69,7 @@ static std::string Reduce(const std::string& str,
 std::string CustomFunction::ToString(const CustomFunction &func)
 {
     std::stringstream stream;
-    stream << func.Name() << "{" << func.Code();
+    stream << func.Name() << "\n{\n" << func.Code() << "\n}\n";
     return stream.str();
 }
 
