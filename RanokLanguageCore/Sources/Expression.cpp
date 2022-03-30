@@ -87,7 +87,7 @@ void VariableExpression::Visit(std::queue<std::pair<int, Expression*>>& containe
 
 
 UnaryOperation::UnaryOperation(const FunctionInfo<double(double)>& operation, spExpression child):
-    Expression(operation.name),
+    Expression(operation.Name()),
     operation(operation),
     child(child)
 {
@@ -117,7 +117,7 @@ void UnaryOperation::Visit(std::queue<std::pair<int, Expression*>>& container, i
 BinaryOperation::BinaryOperation(const FunctionInfo<double(double, double)>& operation,
         spExpression leftChild,
         spExpression rightChild):
-    Expression(operation.name),
+    Expression(operation.Name()),
     operation(operation),
     leftChild(leftChild),
     rightChild(rightChild)
@@ -147,7 +147,7 @@ void BinaryOperation::Reset()
 }
 
 FunctionExpression::FunctionExpression(const FunctionInfo<FuncType>& function, const std::vector<spExpression>& args):
-    Expression(function.name),
+    Expression(function.Name()),
     function(function),
     params(args)
 {

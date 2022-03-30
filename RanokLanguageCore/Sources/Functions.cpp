@@ -198,7 +198,7 @@ void Functions::DumpCustomsOnDemandTo(const std::string &filepath)
 FunctionInfo<FunctionExpression::FuncType>* Functions::Find(const std::string &name)
 {
     for (auto& func : _functions)
-        if (func.name == name)
+        if (func.Name() == name)
             return &func;
     return nullptr;
 }
@@ -211,7 +211,7 @@ const std::vector<FunctionInfo<FunctionExpression::FuncType>>& Functions::GetAll
 CustomFunction* Functions::FindCustom(const std::string& name)
 {
     for (auto& func : _customFunctions)
-        if (func.Info().name == name)
+        if (func.Info().Name() == name)
             return &func;
     return nullptr;
 }

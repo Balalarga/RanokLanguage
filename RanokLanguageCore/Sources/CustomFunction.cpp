@@ -20,6 +20,17 @@ CustomFunction::CustomFunction(const FunctionInfo<FunctionExpression::FuncType> 
     _program = parser.Parse(Lexer::CreateFrom(code));
     _args = _program.Table().Arguments();
     _root = _program.Root();
+
+    std::stringstream customDesc;
+    customDesc << _info.name << "(";
+    for (size_t i = 0; i < Args().size(); ++i)
+    {
+        customDesc << Args()[i]->name;
+        if (i != Args().size() - 1)
+            customDesc << ", ";
+    }
+    customDesc << ")";
+    _info.desc = customDesc.str();
 }
 
 CustomFunction::CustomFunction(const std::string &name, const std::string &code):

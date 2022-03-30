@@ -101,8 +101,8 @@ void CodeGenerator::CheckMappings()
 {
     for (auto& func: Functions::GetAll())
     {
-        if (_languageDefinition.functionsMapping.find(func.name) == _languageDefinition.functionsMapping.end())
-            throw std::runtime_error("Couldn't find code for " + func.name + " function");
+        if (_languageDefinition.functionsMapping.find(func.Name()) == _languageDefinition.functionsMapping.end())
+            throw std::runtime_error("Couldn't find code for " + func.Name() + " function");
     }
 
     for (auto& oper : Operations::GetUnaries())
@@ -151,7 +151,7 @@ std::string CodeGenerator::DefineFunctions(Program& program)
         for (auto& a: func.Args())
             argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a->name));
 
-        code << EnterFunction(_languageDefinition.numberType, func.Info().name, fmt::format("{}", fmt::join(argsDef, ", ")));
+        code << EnterFunction(_languageDefinition.numberType, func.Info().Name(), fmt::format("{}", fmt::join(argsDef, ", ")));
         code << DefineVariables(func.GetProgram());
         code << fmt::format(_languageDefinition.returnDef, GetExpressionCode(func.Root().get())) << _languageDefinition.endLineDef;
         code << LeaveFunction();
@@ -201,11 +201,11 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
     }
     else if (auto* expr = dynamic_cast<UnaryOperation*>(expression))
     {
-        return fmt::format(GetUnaryOperationCode(expr->operation.name), GetExpressionCode(expr->child.get()));
+        return fmt::format(GetUnaryOperationCode(expr->operation.Name()), GetExpressionCode(expr->child.get()));
     }
     else if (auto* expr = dynamic_cast<BinaryOperation*>(expression))
     {
-        return fmt::format(GetBinaryOperationCode(expr->operation.name),
+        return fmt::format(GetBinaryOperationCode(expr->operation.Name()),
                            GetExpressionCode(expr->leftChild.get()),
                            GetExpressionCode(expr->rightChild.get()));
     }
@@ -216,7 +216,7 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
         for (auto& i: expr->params)
             params.push_back(GetExpressionCode(i.get()));
 
-        return fmt::format("{0}({1})", GetFunctionCode(expr->function.name), fmt::join(params, ", "));
+        return fmt::format("{0}({1})", GetFunctionCode(expr->function.Name()), fmt::join(params, ", "));
     }
     else if (auto* expr = dynamic_cast<CustomFunctionExpression*>(expression))
     {

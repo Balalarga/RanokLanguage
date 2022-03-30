@@ -25,8 +25,16 @@ struct FunctionInfo: public std::function<T>
         return name < oth.name;
     }
 
-    const std::string name;
-    const std::string desc;
+
+    inline const std::string& Name() const { return name; }
+    inline const std::string& Desc() const { return desc; }
+
+
+private:
+    std::string name;
+    std::string desc;
+
+    friend class CustomFunction;
 };
 
 
