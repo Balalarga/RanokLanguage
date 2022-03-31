@@ -45,7 +45,6 @@ Operations::Binary Operations::BinaryFromString(const std::string& name)
     auto it = _binaryOperations.find(name);
     if (it != _binaryOperations.end())
         return it->second;
-    std::cout << "No "<<name<<" operation\n";
     return nullptr;
 }
 
