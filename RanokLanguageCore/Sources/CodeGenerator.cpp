@@ -209,15 +209,6 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
                            GetExpressionCode(expr->leftChild.get()),
                            GetExpressionCode(expr->rightChild.get()));
     }
-    else if (auto* expr = dynamic_cast<FunctionExpression*>(expression))
-    {
-        std::vector<std::string> params;
-        
-        for (auto& i: expr->params)
-            params.push_back(GetExpressionCode(i.get()));
-
-        return fmt::format("{0}({1})", GetFunctionCode(expr->function.Name()), fmt::join(params, ", "));
-    }
     else if (auto* expr = dynamic_cast<CustomFunctionExpression*>(expression))
     {
         std::vector<std::string> params;
@@ -226,6 +217,15 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
             params.push_back(i->name);
 
         return fmt::format("{0}({1})", expr->name, fmt::join(params, ", "));
+    }
+    else if (auto* expr = dynamic_cast<FunctionExpression*>(expression))
+    {
+        std::vector<std::string> params;
+        
+        for (auto& i: expr->params)
+            params.push_back(GetExpressionCode(i.get()));
+
+        return fmt::format("{0}({1})", GetFunctionCode(expr->function.Name()), fmt::join(params, ", "));
     }
     return "";
 }
