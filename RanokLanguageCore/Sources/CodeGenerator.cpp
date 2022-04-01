@@ -214,7 +214,7 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
         std::vector<std::string> params;
 
         for (auto& i: expr->params)
-            params.push_back(i->name);
+            params.push_back(GetExpressionCode(i.get()));
 
         return fmt::format("{0}({1})", expr->name, fmt::join(params, ", "));
     }
