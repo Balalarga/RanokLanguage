@@ -22,13 +22,16 @@ void Lexer::Process(const std::string &code, bool forceClean)
             _lexemes.pop();
 
     unsigned pivot = 0;
+    size_t line = 1;
     while(_lexemes.empty() || _lexemes.back().Type() != Token::End)
     {
-        _lexemes.push(NextLexeme(code, pivot));
+        _lexemes.push(NextLexeme(code, pivot, line));
+        if (_lexemes.back().Type() == Token::Endline)
+            ++line;
     }
 }
 
-Lexeme Lexer::NextLexeme(const std::string &data, unsigned int &pivot)
+Lexeme Lexer::NextLexeme(const std::string &data, unsigned int &pivot, size_t line)
 {
     while (pivot < data.size() && isspace(data[pivot]))
         pivot++;
@@ -39,16 +42,16 @@ Lexeme Lexer::NextLexeme(const std::string &data, unsigned int &pivot)
             pivot++;
 
         pivot++;
-        return NextLexeme(data, pivot);
+        return NextLexeme(data, pivot, line);
     }
 
     if(pivot >= data.size() || data[pivot] == '\0')
-        return {Token::End, "End"};
+        return {Token::End, "End", line};
 
     if(data[pivot] == ';')
     {
         pivot++;
-        return {Token::Endline, ';'};
+        return {Token::Endline, ';', line};
     }
 
     unsigned begin = pivot;
@@ -82,45 +85,45 @@ Lexeme Lexer::NextLexeme(const std::string &data, unsigned int &pivot)
         if (is.fail () && !is.eof ())
         {
             _error = "Unexpected eof";
-            return {Token::End, "eof"};
+            return {Token::End, "eof", line};
         }
 
-        return {Token::Number, val};
+        return {Token::Number, val, line};
     }
 
     char symbol = data[pivot++];
     switch (symbol)
     {
         case '=':
-            return {Token::Assign, symbol};
+            return {Token::Assign, symbol, line};
         case '(':
-            return {Token::ParenOpen, symbol};
+            return {Token::ParenOpen, symbol, line};
         case ')':
-            return {Token::ParenClose, symbol};
+            return {Token::ParenClose, symbol, line};
         case '+':
-            return {Token::Plus, symbol};
+            return {Token::Plus, symbol, line};
         case '-':
-            return {Token::Minus, symbol};
+            return {Token::Minus, symbol, line};
         case '*':
-            return {Token::Multiply, symbol};
+            return {Token::Multiply, symbol, line};
         case '/':
         case '\\':
-            return {Token::Divide, symbol};
+            return {Token::Divide, symbol, line};
         case '&':
-            return {Token::Union, symbol};
+            return {Token::Union, symbol, line};
         case '|':
-            return {Token::Cross, symbol};
+            return {Token::Cross, symbol, line};
         case ',':
-            return {Token::Comma, symbol};
+            return {Token::Comma, symbol, line};
         case '^':
-            return {Token::Pow, symbol};
+            return {Token::Pow, symbol, line};
     }
     pivot--;
 
     if (!isalpha (data[pivot]))
     {
         _error = "Unexpected symbol "+string(1, data[pivot]);
-        return {Token::End, "eof"};
+        return {Token::End, "eof", line};
     }
 
     // we have a word (starting with A-Z) - pull it out
@@ -128,18 +131,18 @@ Lexeme Lexer::NextLexeme(const std::string &data, unsigned int &pivot)
         pivot++;
 
     auto word = data.substr(begin, pivot-begin);
-    return {Token::Id, word};
+    return {Token::Id, word, line};
 }
 
 Lexeme Lexer::Pop(Token token)
 {
     if (_lexemes.empty())
-        return {Token::None, "None"};
+        return {Token::None, "None", 0};
 
     _lexemes.pop();
 
     if (_lexemes.empty())
-        return {Token::None, "None"};
+        return {Token::None, "None", 0};
 
     if (token != Token::None && _lexemes.front().Type() != token)
         _error = "Error: Token is " + TokenToString(_lexemes.front().Type()) + "Expected " + TokenToString(token);
@@ -156,7 +159,7 @@ Lexeme Lexer::Top()
 {
     if (!_lexemes.empty())
         return _lexemes.front();
-    return {Token::None, "None"};
+    return {Token::None, "None", 0};
 }
 
 string Lexeme::ToPrintableString() const

@@ -34,24 +34,16 @@ Program Parser::Parse(Lexer lexer)
 
         if (lexeme.Type() == Token::Id)
         {
-            if (CaseCompare(tokenName, "argument", true) ||
-                CaseCompare(tokenName, "arguments", true) ||
-                CaseCompare(tokenName, "args", true))
+            if (CaseCompare(tokenName, "args", true))
             {
                 HandleArgument();
-            }
-            else if (CaseCompare(tokenName, "constant", true) ||
-                     CaseCompare(tokenName, "const", true))
-            {
-                HandleConstant();
             }
             else if(CaseCompare(tokenName, "return", true))
             {
                 LexerCheckedPop();
                 program.Init(HandleReturn());
             }
-            else if (CaseCompare(tokenName, "variable", true) ||
-                     CaseCompare(tokenName, "var", true))
+            else if (CaseCompare(tokenName, "var", true))
             {
                 LexerCheckedPop();
                 HandleVariable();
@@ -63,9 +55,15 @@ Program Parser::Parse(Lexer lexer)
         }
         else
         {
-            _error = "Unknown token " + tokenName;
+            _error = "Unknown token " + lexeme.Name() + " at " + std::to_string(lexeme.Line()) + " line";
             break;
         }
+        if (!_lexer->Error().empty())
+        {
+            _error = _lexer->Error() + " at " + std::to_string(lexeme.Line()) + " line";
+            break;
+        }
+
         lexeme = LexerCheckedPop();
     }
     _program = nullptr;
@@ -82,7 +80,7 @@ Lexeme Parser::LexerCheckedPop(Token token)
     else
     {
         _error = "Lexer is empty";
-        return {Token::None, "NONE"};
+        return {Token::None, "NONE", 0};
     }
 }
 Lexeme Parser::LexerCheckedTop()
@@ -94,7 +92,7 @@ Lexeme Parser::LexerCheckedTop()
     else
     {
         _error = "Lexer is empty";
-        return {Token::None, "NONE"};
+        return {Token::None, "NONE", 0};
     }
 }
 

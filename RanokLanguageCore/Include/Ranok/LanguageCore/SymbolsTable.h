@@ -8,12 +8,13 @@
 #include "Expression.h"
 
 #include <vector>
+#include <map>
 
 
 class SymbolsTable
 {
 public:
-    SymbolsTable() = default;
+    SymbolsTable();
 
     spArgumentExpression CreateArgument(const std::string& name, const ArgumentExpression::Range& range);
     spVariableExpression CreateVariable(const std::string& name, spExpression child);
@@ -27,6 +28,7 @@ public:
     inline const std::vector<spVariableExpression>& Variables(){ return _variables; }
     inline const std::vector<spNumberExpression>&   Constants(){ return _constants; }
 
+    static std::map<std::string, double> GlobalConstants;
 
 private:
     std::vector<spArgumentExpression> _arguments;

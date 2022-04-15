@@ -65,6 +65,12 @@ VariableExpression::VariableExpression(const std::string& name, spExpression chi
     
 }
 
+void VariableExpression::VisitRecur(std::queue<std::pair<int, Expression *> > &container, int depth)
+{
+    Expression::Visit(container, depth);
+    child->Visit(container, depth+1);
+}
+
 double VariableExpression::GetValue()
 {
     if (!Computed())
@@ -82,7 +88,7 @@ void VariableExpression::Reset()
 void VariableExpression::Visit(std::queue<std::pair<int, Expression*>>& container, int depth)
 {
     Expression::Visit(container, depth);
-    child->Visit(container, depth+1);
+//    child->Visit(container, depth+1);
 }
 
 

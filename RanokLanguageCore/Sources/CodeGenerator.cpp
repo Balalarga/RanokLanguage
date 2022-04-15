@@ -45,9 +45,24 @@ std::map<std::string, std::string> CodeGenerator::defaultBinaryOperationsMapping
     {"/", "{0} / {1}"},
     {"*", "{0} * {1}"},
     {"^", "pow({0}, {1})"},
-    {"|", "{0} + {1} + sqrt(pow({0}, 2) + pow({1}, 2))"},
-    {"&", "{0} + {1} - sqrt(pow({0}, 2) + pow({1}, 2))"},
+    {"|", "({0} + {1} + sqrt(pow({0}, 2) + pow({1}, 2)))"},
+    {"&", "({0} + {1} - sqrt(pow({0}, 2) + pow({1}, 2)))"}
 };
+
+std::vector<std::set<std::string>> operationsPrioriry{
+    {"+", "-", "&", "|"},
+    {"*", "/", "^"},
+};
+
+int GetPriority(std::string operation)
+{
+    for (int i = 0; i < operationsPrioriry.size(); ++i)
+    {
+        if (operationsPrioriry[i].find(operation) != operationsPrioriry[i].end())
+            return i;
+    }
+    return -1;
+}
 
 CodeGenerator::CodeGenerator()
 {
@@ -90,10 +105,9 @@ CodeGenerator::CodeGenerator(const LanguageDefinition& langDef):
                                                           {"/", "{0} / {1}"},
                                                           {"*", "{0} * {1}"},
                                                           {"^", "pow({0}, {1})"},
-                                                          {"|", "{0} + {1} + sqrt(pow({0}, 2) + pow({1}, 2))"},
-                                                          {"&", "{0} + {1} - sqrt(pow({0}, 2) + pow({1}, 2))"},
+                                                          {"|", "({0} + {1} + sqrt(pow({0}, 2) + pow({1}, 2)))"},
+                                                          {"&", "({0} + {1} - sqrt(pow({0}, 2) + pow({1}, 2)))"}
                                                       });
-    
     CheckMappings();
 }
 
@@ -149,7 +163,7 @@ std::string CodeGenerator::DefineFunctions(Program& program)
     {
         argsDef.clear();
         for (auto& a: func.Args())
-            argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a->name));
+            argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a->name));        
 
         code << EnterFunction(_languageDefinition.numberType, func.Info().Name(), fmt::format("{}", fmt::join(argsDef, ", ")));
         code << DefineVariables(func.GetProgram());
@@ -205,9 +219,23 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
     }
     else if (auto* expr = dynamic_cast<BinaryOperation*>(expression))
     {
+        int rootPriority = GetPriority(expr->name);
+        auto left = GetExpressionCode(expr->leftChild.get());
+        auto right = GetExpressionCode(expr->rightChild.get());
+        if (auto op = dynamic_cast<BinaryOperation*>(expr->rightChild.get()))
+        {
+            if (rootPriority > GetPriority(op->name))
+                right = "(" + right + ")";
+        }
+        if (auto op = dynamic_cast<BinaryOperation*>(expr->leftChild.get()))
+        {
+            if (rootPriority > GetPriority(op->name))
+                left = "(" + left + ")";
+        }
+
         return fmt::format(GetBinaryOperationCode(expr->operation.Name()),
-                           GetExpressionCode(expr->leftChild.get()),
-                           GetExpressionCode(expr->rightChild.get()));
+                           left,
+                           right);
     }
     else if (auto* expr = dynamic_cast<CustomFunctionExpression*>(expression))
     {
@@ -239,7 +267,9 @@ std::string CodeGenerator::EnterFunction(const std::string& returnType,
                                          const std::string& name,
                                          const std::string& params)
 {
-    return fmt::format(_languageDefinition.funcSignature, returnType, name, params) +
-            _languageDefinition.codeBlock.first;
+    std::stringstream enterCode;
+    enterCode << fmt::format(_languageDefinition.funcSignature, returnType, name, params) +
+                 _languageDefinition.codeBlock.first;
+    return enterCode.str();
 }
 

@@ -9,21 +9,24 @@
 
 struct Lexeme
 {
-    Lexeme(const Token& token, std::string name):
+    Lexeme(const Token& token, std::string name, size_t line):
         _type(token),
         _name(name),
         _value(0),
+        _line(line),
         _isNumber(false) {}
-    Lexeme(const Token& token, char name):
+    Lexeme(const Token& token, char name, size_t line):
         _type(token),
         _name(std::string(1, name)),
         _value(0),
+        _line(line),
         _isNumber(false) {}
 
-    Lexeme(const Token& token, double value):
+    Lexeme(const Token& token, double value, size_t line):
         _type(token),
         _name(std::to_string(value)),
         _value(value),
+        _line(line),
         _isNumber(true) {}
 
     std::string ToPrintableString() const;
@@ -32,6 +35,7 @@ struct Lexeme
     inline const std::string& Name() { return _name; }
     inline const double& Value() { return _value; }
     inline const bool& IsNumber() { return _isNumber; }
+    inline const size_t& Line() { return _line; }
 
 
 private:
@@ -39,6 +43,7 @@ private:
     std::string _name;
     double _value;
     bool _isNumber;
+    size_t _line;
 };
 
 
@@ -59,7 +64,7 @@ public:
 
 
 protected:
-    Lexeme NextLexeme(const std::string& data, unsigned& pivot);
+    Lexeme NextLexeme(const std::string& data, unsigned& pivot, size_t line);
 
 
 private:

@@ -69,6 +69,7 @@ class VariableExpression: public Expression
 public:
     VariableExpression(const std::string& name, spExpression child);
 
+    void VisitRecur(std::queue<std::pair<int, Expression*>>& container, int depth = 0);
     virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;
     virtual double GetValue() override;
     virtual void Reset() override;

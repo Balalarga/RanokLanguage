@@ -4,6 +4,16 @@
 
 #include "SymbolsTable.h"
 
+std::map<std::string, double> SymbolsTable::GlobalConstants
+{
+    {"PI", 3.141592}
+};
+
+SymbolsTable::SymbolsTable()
+{
+    for (auto& i: GlobalConstants)
+        _variables.push_back(std::make_shared<VariableExpression>(i.first, std::make_shared<NumberExpression>(i.second)));
+}
 
 spArgumentExpression SymbolsTable::CreateArgument(const std::string& name, const ArgumentExpression::Range& range)
 {

@@ -18,7 +18,7 @@ double Operations::RvUnion(double a, double b)
 
 std::map<std::string, Operations::Unary> Operations::_unaryOperations
 {
-    {"-", [](double v) { return -v; }},
+    {"-", std::negate<double>()},
 };
 
 std::map<std::string, Operations::Binary> Operations::_binaryOperations
@@ -30,6 +30,7 @@ std::map<std::string, Operations::Binary> Operations::_binaryOperations
     {"^", [](double a, double b) { return std::pow(a, b); }},
     {"|", Operations::RvUnion},
     {"&", Operations::RvCross},
+    {"%", [](double a, double b) { return (int)a % (int)b; }}
 };
 
 Operations::Unary Operations::UnaryFromString(const std::string& name)
