@@ -21,19 +21,8 @@ public:
     virtual ~Expression() = default;
 
     virtual void Visit(std::queue<std::pair<int, Expression*>>&, int depth = 0);
-    virtual double GetValue();
-    virtual void Reset();
-
-    void SetValue(double val);
-
-    inline bool Computed() const { return computed; }
 
     const std::string name;
-
-
-protected:
-    bool computed = false;
-    double value = 0;
 };
 using spExpression = std::shared_ptr<Expression>;
 
@@ -42,7 +31,7 @@ class NumberExpression: public Expression
 {
 public:
     NumberExpression(double value);
-    void Reset() override;
+    const double Value;
 };
 using spNumberExpression = std::shared_ptr<NumberExpression>;
 
@@ -57,7 +46,6 @@ public:
     };
 
     ArgumentExpression(const std::string& name, const Range& range);
-    void Reset() override;
 
     const Range range;
 };
@@ -71,12 +59,24 @@ public:
 
     void VisitRecur(std::queue<std::pair<int, Expression*>>& container, int depth = 0);
     virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;
-    virtual double GetValue() override;
-    virtual void Reset() override;
 
     spExpression const child;
 };
 using spVariableExpression = std::shared_ptr<VariableExpression>;
+
+
+class ArrayExpression: public Expression
+{
+public:
+    ArrayExpression(const std::string& name, spExpression child);
+
+    void VisitRecur(std::queue<std::pair<int, Expression*>>& container, int depth = 0);
+    virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;
+
+    spExpression const child;
+    const size_t count;
+};
+using spArrayExpression = std::shared_ptr<ArrayExpression>;
 
 
 class UnaryOperation: public Expression
@@ -85,8 +85,6 @@ public:
     UnaryOperation(const FunctionInfo<double(double)>& operation, spExpression child);
 
     virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;
-    virtual double GetValue() override;
-    virtual void Reset() override;
 
     const FunctionInfo<double(double)> operation;
     spExpression const child;
@@ -102,8 +100,6 @@ public:
         spExpression rightChild);
 
     virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;
-    virtual double GetValue() override;
-    virtual void Reset() override;
 
     const FunctionInfo<double(double, double)> operation;
     spExpression const leftChild;
@@ -119,13 +115,12 @@ public:
     FunctionExpression(const FunctionInfo<FuncType>& function, const std::vector<spExpression>& args);
 
     virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;
-    virtual double GetValue() override;
-    virtual void Reset() override;
 
     const FunctionInfo<FuncType> function;
     const std::vector<spExpression> params;
 };
 using spFunctionExpression = std::shared_ptr<FunctionExpression>;
+
 
 class CustomFunctionExpression: public FunctionExpression
 {

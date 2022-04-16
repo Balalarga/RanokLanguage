@@ -17,7 +17,6 @@ public:
 
     void Init(const spExpression& root);
 
-    double Process();
     inline SymbolsTable& Table() { return _symbolsTable; }
     inline const spExpression& Root() { return _root; }
 
@@ -67,10 +66,6 @@ public:
 
             std::cout << frontSpacing << "Node: " << top.second->name << "\n";
             frontSpacing += "  ";
-
-            std::cout << frontSpacing << "Computed: " << top.second->Computed() << "\n";
-            if (top.second->Computed())
-                std::cout << frontSpacing << "Value: " << top.second->GetValue() << "\n";
 
             nodes.pop();
         }

@@ -100,6 +100,10 @@ Lexeme Lexer::NextLexeme(const std::string &data, unsigned int &pivot, size_t li
             return {Token::ParenOpen, symbol, line};
         case ')':
             return {Token::ParenClose, symbol, line};
+        case '[':
+            return {Token::SquareBracketOpen, symbol, line};
+        case ']':
+            return {Token::SquareBracketClose, symbol, line};
         case '+':
             return {Token::Plus, symbol, line};
         case '-':
@@ -117,6 +121,8 @@ Lexeme Lexer::NextLexeme(const std::string &data, unsigned int &pivot, size_t li
             return {Token::Comma, symbol, line};
         case '^':
             return {Token::Pow, symbol, line};
+        case ':':
+            return {Token::Colon, symbol, line};
     }
     pivot--;
 

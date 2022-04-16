@@ -25,7 +25,10 @@ enum class Token
     Plus,
     Minus,
     Cross,
-    Union
+    Union,
+    SquareBracketOpen,
+    SquareBracketClose,
+    Colon
 };
 
 static std::string TokenToString(Token token)
@@ -64,6 +67,12 @@ static std::string TokenToString(Token token)
             return "Cross";
         case Token::Union:
             return "Union";
+        case Token::SquareBracketOpen:
+            return "SquareBracketOpen";
+        case Token::SquareBracketClose:
+            return "SquareBracketClose";
+        case Token::Colon:
+            return "Colon";
     }
     return "";
 }

@@ -10,10 +10,9 @@
 
 
 template<class T>
-struct FunctionInfo: public std::function<T>
+struct FunctionInfo
 {
-    FunctionInfo(const std::string& name, std::function<T> function, const std::string descr = ""):
-        std::function<T>(function),
+    FunctionInfo(const std::string& name, const std::string descr = ""):
         name(name),
         desc(descr)
     {

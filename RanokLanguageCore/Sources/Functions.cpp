@@ -21,135 +21,26 @@ using namespace std;
         return false; \
     }
 
-CheckedResult<double> Sqrt(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::sqrt(params[0]->GetValue());
-}
-CheckedResult<double> Abs(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::fabs(params[0]->GetValue());
-}
-CheckedResult<double> Sin(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::sin(params[0]->GetValue());
-}
-CheckedResult<double> Cos(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::cos(params[0]->GetValue());
-}
-CheckedResult<double> Tan(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::tan(params[0]->GetValue());
-}
-CheckedResult<double> ArcTan(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::atan(params[0]->GetValue());
-}
-CheckedResult<double> ArcSin(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::asin(params[0]->GetValue());
-}
-CheckedResult<double> ArcCos(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::acos(params[0]->GetValue());
-}
-CheckedResult<double> Cosh(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::cosh(params[0]->GetValue());
-}
-CheckedResult<double> Sinh(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::sinh(params[0]->GetValue());
-}
-CheckedResult<double> Tanh(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::tanh(params[0]->GetValue());
-}
-CheckedResult<double> Exp(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::exp(params[0]->GetValue());
-}
-CheckedResult<double> Ln(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::log(params[0]->GetValue());
-}
-CheckedResult<double> Log(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::log(params[0]->GetValue());
-}
-CheckedResult<double> Log10(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::log10(params[0]->GetValue());
-}
-CheckedResult<double> Log2(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::log2(params[0]->GetValue());
-}
-CheckedResult<double> Ceil(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::ceil(params[0]->GetValue());
-}
-CheckedResult<double> Floor(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::floor(params[0]->GetValue());
-}
-CheckedResult<double> Functions::Cut(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 4)
-    auto& var = params[0];
-    auto& axis = params[1];
-    auto& start = params[2];
-    auto& end = params[3];
-
-    /*
-        var s1 = -(z - 0.5); // Верх
-        var s2 = z + 0.5; // Снизу
-        RETURN W & s1 & s2;
-    */
-    auto plane1 = (-axis->GetValue() + end->GetValue());
-    auto plane2 = (axis->GetValue() - start->GetValue());
-    return Operations::RvCross(var->GetValue(), Operations::RvCross(plane1, plane2));
-}
-
-
 std::vector<FunctionInfo<FunctionExpression::FuncType>> Functions::_functions
 {
-        { "abs" , &Abs, "abs(number)" },
-        { "sqrt" , &Sqrt, "sqrt(number)" },
-        { "sin", &Sin, "sin(number)" },
-        { "cos" , &Cos, "cos(number)" },
-        { "tan" , &Tan, "tan(number)" },
-        { "arctan" , &ArcTan, "arctan(number)" },
-        { "arcsin" , &ArcSin, "arcsin(number)" },
-        { "arccos" , &ArcCos, "arccos(number)" },
-        { "cosh" , &Cosh, "cosh(number)" },
-        { "sinh" , &Sinh, "sinh(number)" },
-        { "tanh" , &Tanh, "tanh(number)" },
-        { "exp" , &Exp, "exp(number)" },
-        { "ln" , &Ln, "ln(number)" },
-        { "log" , &Log, "log(number)" },
-        { "log10" , &Log10, "log10(number)" },
-        { "log2" , &Log2, "log2(number)" },
-        { "ceil" , &Ceil, "ceil(number)" },
-        { "floor" , &Floor, "floor(number)" }
+        { "abs" , "abs(number)" },
+        { "sqrt" , "sqrt(number)" },
+        { "sin", "sin(number)" },
+        { "cos" , "cos(number)" },
+        { "tan" , "tan(number)" },
+        { "arctan", "arctan(number)" },
+        { "arcsin", "arcsin(number)" },
+        { "arccos", "arccos(number)" },
+        { "cosh", "cosh(number)" },
+        { "sinh", "sinh(number)" },
+        { "tanh", "tanh(number)" },
+        { "exp", "exp(number)" },
+        { "ln", "ln(number)" },
+        { "log", "log(number)" },
+        { "log10", "log10(number)" },
+        { "log2", "log2(number)" },
+        { "ceil", "ceil(number)" },
+        { "floor", "floor(number)" }
 };
 
 std::vector<CustomFunction> Functions::_customFunctions

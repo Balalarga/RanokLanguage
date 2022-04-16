@@ -23,7 +23,7 @@ std::map<std::string, std::string> InitCustomFunctions()
     s2 = (a - s);
     return f & s1 & s2;)";
     functionsMapping["cut"] = funcCode;
-    Functions::AddCustom(std::make_shared<PureCustomFunction>("cut", funcCode));
+    Functions::AddCustom(CustomFunction("cut", funcCode));
     // Functions::AddCustom(std::make_shared<CustomFunction>(info, funcCode));
 
     return functionsMapping;
@@ -55,28 +55,34 @@ int main(int argc, char **argv)
 
     Parser parser;
     Program program = parser.Parse(Lexer::CreateFrom(code));
-    std::queue<std::pair<int, Expression *>> nodes;
-    program.Root()->Visit(nodes);
-    while (!nodes.empty()) {
-        auto &top = nodes.front();
-        for (int i = 1; i < top.first; ++i)
-            cout << '\t';
-        if (auto func = dynamic_cast<FunctionExpression *>(top.second)) {
-            cout << func->function.name << "(";
-            for (auto &a: func->params)
-                cout << a->name << ", ";
-            cout << ")\n";
-        } else
-            cout << "Node: " << top.second->name << endl;
-        nodes.pop();
-    }
 
-    if (program.Root()) {
+    if (program.Root())
+    {
+        std::queue<std::pair<int, Expression *>> nodes;
+        program.Root()->Visit(nodes);
+        while (!nodes.empty()) {
+            auto &top = nodes.front();
+
+            for (int i = 1; i < top.first; ++i)
+                cout << "  ";
+
+            if (auto func = dynamic_cast<FunctionExpression *>(top.second))
+            {
+                cout << func->function.Name() << "(";
+                for (auto &a: func->params)
+                    cout << a->name << ", ";
+                cout << ")\n";
+            }
+            else
+            {
+                cout << "Node: " << top.second->name << endl;
+            }
+            nodes.pop();
+        }
         cout << gener.Generate(program);
-        for (auto &a: program.Table().Arguments())
-            a->SetValue(0);
-        cout << "Result = " << program.Process() << "\n";
-    } else {
+    }
+    else
+    {
         cout << "Root is empty";
     }
 

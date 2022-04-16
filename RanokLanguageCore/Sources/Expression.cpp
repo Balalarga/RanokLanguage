@@ -19,29 +19,9 @@ void Expression::Visit(std::queue<std::pair<int, Expression*>>& container, int d
     container.push({depth, this});
 }
 
-void Expression::SetValue(double val)
-{
-    value = val;
-    computed = true;
-}
-
-double Expression::GetValue()
-{
-    return value;
-}
-
-void Expression::Reset()
-{
-    computed = false;
-}
-
 NumberExpression::NumberExpression(double value):
-    Expression(std::to_string(value))
-{
-    SetValue(value);
-}
-
-void NumberExpression::Reset()
+    Expression(std::to_string(value)),
+    Value(value)
 {
 
 }
@@ -51,11 +31,6 @@ ArgumentExpression::ArgumentExpression(const std::string& name, const Range& ran
     range(range)
 {
     
-}
-
-void ArgumentExpression::Reset()
-{
-
 }
 
 VariableExpression::VariableExpression(const std::string& name, spExpression child):
@@ -71,20 +46,6 @@ void VariableExpression::VisitRecur(std::queue<std::pair<int, Expression *> > &c
     child->Visit(container, depth+1);
 }
 
-double VariableExpression::GetValue()
-{
-    if (!Computed())
-        SetValue(child->GetValue());
-
-    return Expression::GetValue();
-}
-
-void VariableExpression::Reset()
-{
-    child->Reset();
-    Expression::Reset();
-}
-
 void VariableExpression::Visit(std::queue<std::pair<int, Expression*>>& container, int depth)
 {
     Expression::Visit(container, depth);
@@ -98,20 +59,6 @@ UnaryOperation::UnaryOperation(const FunctionInfo<double(double)>& operation, sp
     child(child)
 {
     
-}
-
-void UnaryOperation::Reset()
-{
-    child->Reset();
-    Expression::Reset();
-}
-
-double UnaryOperation::GetValue()
-{
-    if (!Computed())
-        operation(child->GetValue());
-
-    return Expression::GetValue();
 }
 
 void UnaryOperation::Visit(std::queue<std::pair<int, Expression*>>& container, int depth)
@@ -138,46 +85,12 @@ void BinaryOperation::Visit(std::queue<std::pair<int, Expression*>>& container, 
     rightChild->Visit(container, depth+1);
 }
 
-double BinaryOperation::GetValue()
-{
-    if (!Computed())
-        SetValue(operation(leftChild->GetValue(), rightChild->GetValue()));
-    return Expression::GetValue();
-}
-
-void BinaryOperation::Reset()
-{
-    leftChild->Reset();
-    rightChild->Reset();
-    Expression::Reset();
-}
-
 FunctionExpression::FunctionExpression(const FunctionInfo<FuncType>& function, const std::vector<spExpression>& args):
     Expression(function.Name()),
     function(function),
     params(args)
 {
     
-}
-
-double FunctionExpression::GetValue()
-{
-    if (!Computed() && function)
-    {
-        CheckedResult<double> result = function(params);
-        if (!result.Ok())
-            Reset();
-        else
-            SetValue(result.Get());
-    }
-    return Expression::GetValue();
-}
-
-void FunctionExpression::Reset()
-{
-    for(auto& i: params)
-        i->Reset();
-    Expression::Reset();
 }
 
 void FunctionExpression::Visit(std::queue<std::pair<int, Expression*>>& container, int depth)
