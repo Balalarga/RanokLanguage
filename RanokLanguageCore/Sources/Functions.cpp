@@ -14,33 +14,26 @@
 
 using namespace std;
 
-#define CheckParams(params, count) \
-    if (params.size() != count) \
-    { \
-        cout << __FUNCTION__ << ": parameters error(must be " << count << ")\n"; \
-        return false; \
-    }
-
-std::vector<FunctionInfo<FunctionExpression::FuncType>> Functions::_functions
+std::vector<FunctionInfo> Functions::_functions
 {
-        { "abs" , "abs(number)" },
-        { "sqrt" , "sqrt(number)" },
-        { "sin", "sin(number)" },
-        { "cos" , "cos(number)" },
-        { "tan" , "tan(number)" },
-        { "arctan", "arctan(number)" },
-        { "arcsin", "arcsin(number)" },
-        { "arccos", "arccos(number)" },
-        { "cosh", "cosh(number)" },
-        { "sinh", "sinh(number)" },
-        { "tanh", "tanh(number)" },
-        { "exp", "exp(number)" },
-        { "ln", "ln(number)" },
-        { "log", "log(number)" },
-        { "log10", "log10(number)" },
-        { "log2", "log2(number)" },
-        { "ceil", "ceil(number)" },
-        { "floor", "floor(number)" }
+        { "abs" , {LanguageType::Double}, "abs(number)" },
+        { "sqrt" , {LanguageType::Double}, "sqrt(number)" },
+        { "sin", {LanguageType::Double}, "sin(number)" },
+        { "tan" , {LanguageType::Double}, "tan(number)" },
+        { "cos" , {LanguageType::Double}, "cos(number)" },
+        { "arctan", {LanguageType::Double}, "arctan(number)" },
+        { "arcsin", {LanguageType::Double}, "arcsin(number)" },
+        { "arccos", {LanguageType::Double}, "arccos(number)" },
+        { "cosh", {LanguageType::Double}, "cosh(number)" },
+        { "sinh", {LanguageType::Double}, "sinh(number)" },
+        { "tanh", {LanguageType::Double}, "tanh(number)" },
+        { "exp", {LanguageType::Double}, "exp(number)" },
+        { "ln", {LanguageType::Double}, "ln(number)" },
+        { "log", {LanguageType::Double}, "log(number)" },
+        { "log10", {LanguageType::Double}, "log10(number)" },
+        { "log2", {LanguageType::Double}, "log2(number)" },
+        { "ceil", {LanguageType::Double}, "ceil(number)" },
+        { "floor", {LanguageType::Double}, "floor(number)" }
 };
 
 std::vector<CustomFunction> Functions::_customFunctions
@@ -86,7 +79,7 @@ void Functions::DumpCustomsOnDemandTo(const std::string &filepath)
     }
 }
 
-FunctionInfo<FunctionExpression::FuncType>* Functions::Find(const std::string &name)
+FunctionInfo* Functions::Find(const std::string &name)
 {
     for (auto& func : _functions)
         if (func.Name() == name)
@@ -94,7 +87,7 @@ FunctionInfo<FunctionExpression::FuncType>* Functions::Find(const std::string &n
     return nullptr;
 }
 
-const std::vector<FunctionInfo<FunctionExpression::FuncType>>& Functions::GetAll()
+const std::vector<FunctionInfo>& Functions::GetAll()
 {
     return _functions;
 }

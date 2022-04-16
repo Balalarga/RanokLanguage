@@ -7,54 +7,45 @@
 #include <iostream>
 
 
-double Operations::RvCross(double a, double b)
+std::vector<FunctionInfo> Operations::_unaryOperations
 {
-    return a + b - std::sqrt(std::pow(a, 2) + std::pow(b, 2));
-};
-double Operations::RvUnion(double a, double b)
-{
-    return a + b + std::sqrt(std::pow(a, 2) + std::pow(b, 2));
+    {"-", {LanguageType::Double}},
 };
 
-std::map<std::string, Operations::Unary> Operations::_unaryOperations
+std::vector<FunctionInfo> Operations::_binaryOperations
 {
-    {"-", std::negate<double>()},
+    {"+", {LanguageType::Double, LanguageType::Double}},
+    {"-", {LanguageType::Double, LanguageType::Double}},
+    {"/", {LanguageType::Double, LanguageType::Double}},
+    {"*", {LanguageType::Double, LanguageType::Double}},
+    {"^", {LanguageType::Double, LanguageType::Double}},
+    {"|", {LanguageType::Double, LanguageType::Double}},
+    {"&", {LanguageType::Double, LanguageType::Double}}
 };
 
-std::map<std::string, Operations::Binary> Operations::_binaryOperations
+FunctionInfo* Operations::UnaryFromString(const std::string& name)
 {
-    {"+", std::plus<double>()},
-    {"-", std::minus<double>()},
-    {"/", std::divides<double>()},
-    {"*", std::multiplies<double>()},
-    {"^", [](double a, double b) { return std::pow(a, b); }},
-    {"|", Operations::RvUnion},
-    {"&", Operations::RvCross}
-};
-
-Operations::Unary Operations::UnaryFromString(const std::string& name)
-{
-    auto it = _unaryOperations.find(name);
-    if (it == _unaryOperations.end())
-        return nullptr;
-    return it->second;
+    for (auto& i: _unaryOperations)
+        if (i.Name() == name)
+            return &i;
+    return nullptr;
 }
 
-Operations::Binary Operations::BinaryFromString(const std::string& name)
+FunctionInfo* Operations::BinaryFromString(const std::string& name)
 {
-    auto it = _binaryOperations.find(name);
-    if (it != _binaryOperations.end())
-        return it->second;
+    for (auto& i: _binaryOperations)
+        if (i.Name() == name)
+            return &i;
     return nullptr;
 }
 
 
-const std::map<std::string, Operations::Binary>& Operations::GetBinaries()
+const std::vector<FunctionInfo>& Operations::GetBinaries()
 {
     return _binaryOperations;
 }
 
-const std::map<std::string, Operations::Unary>& Operations::GetUnaries()
+const std::vector<FunctionInfo>& Operations::GetUnaries()
 {
     return _unaryOperations;
 }

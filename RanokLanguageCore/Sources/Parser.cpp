@@ -180,8 +180,8 @@ spExpression Parser::Expr()
            lexeme.Type() == Token::Union)
     {
         LexerCheckedPop();
-        FunctionInfo function(lexeme.Name(), Operations::BinaryFromString(lexeme.Name()));
-        node = std::make_shared<BinaryOperation>(function, node, Term());
+        auto binaryInfo = Operations::BinaryFromString(lexeme.Name());
+        node = std::make_shared<BinaryOperation>(*binaryInfo, node, Term());
         lexeme = LexerCheckedTop();
     }
     return node;
@@ -196,8 +196,8 @@ spExpression Parser::Term()
            lexeme.Type() == Token::Divide)
     {
         LexerCheckedPop();
-        FunctionInfo function(lexeme.Name(), Operations::BinaryFromString(lexeme.Name()));
-        node = std::make_shared<BinaryOperation>(function, node, Term());
+        auto binaryInfo = Operations::BinaryFromString(lexeme.Name());
+        node = std::make_shared<BinaryOperation>(*binaryInfo, node, Term());
         lexeme = LexerCheckedTop();
     }
     return node;
@@ -222,8 +222,8 @@ spExpression Parser::Factor()
     else if(lexeme.Type() == Token::Minus)
     {
         LexerCheckedPop();
-        FunctionInfo function(lexeme.Name(), Operations::UnaryFromString(lexeme.Name()));
-        return std::make_shared<UnaryOperation>(function, Factor());
+        auto unaryInfo = Operations::UnaryFromString(lexeme.Name());
+        return std::make_shared<UnaryOperation>(*unaryInfo, Factor());
     }
     else if(lexeme.Type() == Token::Id)
     {

@@ -6,20 +6,21 @@
 #define RANOKLANGUAGE_FUNCTIONINFO_H
 
 #include <string>
-#include <functional>
+#include <vector>
+#include "Types.h"
 
 
-template<class T>
 struct FunctionInfo
 {
-    FunctionInfo(const std::string& name, const std::string descr = ""):
+    FunctionInfo(const std::string& name, const std::vector<LanguageType>& params, const std::string descr = ""):
         name(name),
-        desc(descr)
+        desc(descr),
+        params(params)
     {
 
     }
 
-    bool operator<(const FunctionInfo<T>& oth) const 
+    bool operator<(const FunctionInfo& oth) const
     {
         return name < oth.name;
     }
@@ -27,11 +28,13 @@ struct FunctionInfo
 
     inline const std::string& Name() const { return name; }
     inline const std::string& Desc() const { return desc; }
+    inline const std::vector<LanguageType>& Params() const { return params; }
 
 
 private:
     std::string name;
     std::string desc;
+    std::vector<LanguageType> params;
 
     friend class CustomFunction;
 };

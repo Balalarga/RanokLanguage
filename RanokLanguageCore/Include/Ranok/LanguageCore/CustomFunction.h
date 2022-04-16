@@ -13,13 +13,12 @@
 class CustomFunction
 {
 public:
-    CustomFunction(const FunctionInfo<FunctionExpression::FuncType>& info, const std::string &code);
-    CustomFunction(const std::string& name, const std::string &code);
+    CustomFunction(const FunctionInfo& info, const std::string &code);
     virtual ~CustomFunction() = default;
 
     void SetRoot(spExpression& root);
 
-    inline const FunctionInfo<FunctionExpression::FuncType>& Info() const { return _info; }
+    inline const FunctionInfo& Info() const { return _info; }
     inline spExpression Root() { return _root; }
     inline const std::vector<spArgumentExpression>& Args() const { return _args; }
 
@@ -34,7 +33,7 @@ public:
 
 
 private:
-    FunctionInfo<FunctionExpression::FuncType> _info;
+    FunctionInfo _info;
     spExpression _root;
     std::vector<spArgumentExpression> _args;
     Program _program;

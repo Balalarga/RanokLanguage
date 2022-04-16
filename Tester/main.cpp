@@ -15,15 +15,16 @@ int &NextErrorCode() {
 
 std::map<std::string, std::string> InitCustomFunctions()
 {
-    FunctionInfo<FunctionExpression::FuncType> info("cut", &Functions::Cut);
+    FunctionInfo info("cut", {LanguageType::Double, LanguageType::Double,
+                              LanguageType::Double, LanguageType::Double});
     std::map<std::string, std::string> functionsMapping;
     const std::string funcCode = R"(
     args f, a, s, e;
     s1 = (-a + e);
     s2 = (a - s);
     return f & s1 & s2;)";
-    functionsMapping["cut"] = funcCode;
-    Functions::AddCustom(CustomFunction("cut", funcCode));
+    functionsMapping[info.Name()] = funcCode;
+    Functions::AddCustom(CustomFunction(info, funcCode));
     // Functions::AddCustom(std::make_shared<CustomFunction>(info, funcCode));
 
     return functionsMapping;

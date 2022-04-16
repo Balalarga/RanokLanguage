@@ -121,14 +121,14 @@ void CodeGenerator::CheckMappings()
 
     for (auto& oper : Operations::GetUnaries())
     {
-        if (_languageDefinition.unaryOperationsMapping.find(oper.first) == _languageDefinition.unaryOperationsMapping.end())
-            throw std::runtime_error("Couldn't find code for " + oper.first + " unary operation");
+        if (_languageDefinition.unaryOperationsMapping.find(oper.Name()) == _languageDefinition.unaryOperationsMapping.end())
+            throw std::runtime_error("Couldn't find code for " + oper.Name() + " unary operation");
     }
 
     for (auto& oper : Operations::GetBinaries())
     {
-        if (_languageDefinition.binaryOperationsMapping.find(oper.first) == _languageDefinition.binaryOperationsMapping.end())
-            throw std::runtime_error("Couldn't find code for " + oper.first + " binary function");
+        if (_languageDefinition.binaryOperationsMapping.find(oper.Name()) == _languageDefinition.binaryOperationsMapping.end())
+            throw std::runtime_error("Couldn't find code for " + oper.Name() + " binary function");
     }
 }
 
