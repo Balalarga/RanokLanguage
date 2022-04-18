@@ -29,8 +29,7 @@ std::map<std::string, Operations::Binary> Operations::_binaryOperations
     {"*", std::multiplies<double>()},
     {"^", [](double a, double b) { return std::pow(a, b); }},
     {"|", Operations::RvUnion},
-    {"&", Operations::RvCross},
-    {"%", [](double a, double b) { return (int)a % (int)b; }}
+    {"&", Operations::RvCross}
 };
 
 Operations::Unary Operations::UnaryFromString(const std::string& name)
