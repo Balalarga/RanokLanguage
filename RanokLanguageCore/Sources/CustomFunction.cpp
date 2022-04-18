@@ -12,10 +12,11 @@ void CustomFunction::SetRoot(spExpression& root)
     _root = root;
 }
 
-CustomFunction::CustomFunction(const FunctionInfo &info, const std::string &code):
-    _info(info),
+CustomFunction::CustomFunction(const std::string& name, const std::string &code):
     _code(code)
 {
+    _info.name = name;
+
     Parser parser;
     _program = parser.Parse(Lexer::CreateFrom(code));
     _args = _program.Table().Arguments();
@@ -55,21 +56,13 @@ CustomFunction CustomFunction::FromString(const std::string &str, int& endId)
     std::string code;
     int codeStart = str.find_first_of("{");
     int codeEnd = str.find_first_of("}");
-    int argsStart = str.find_first_of("args");
-    std::vector<LanguageType> params;
-    while (str[argsStart] != ';')
-    {
-        if (str[argsStart] == ',')
-        {
-            if (str[argsStart-1] == ']' && str[argsStart-2] == '[')
-                params.push_back(LanguageType::DoubleArray);
-            else
-                params.push_back(LanguageType::Double);
-        }
-        argsStart++;
-    }
     name = StringUtility::Reduce(str.substr(0, codeStart++), "");
     code = StringUtility::Trim(str.substr(codeStart, codeEnd - codeStart));
     endId += codeEnd + 1;
-    return CustomFunction({name, params}, code);
+    return CustomFunction(name, code);
+}
+
+CustomFunction CustomFunction::FromString(const std::string &name, const std::string &code)
+{
+    return CustomFunction(name, code);
 }

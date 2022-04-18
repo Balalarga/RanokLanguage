@@ -26,6 +26,7 @@ public:
         std::string endLineDef = ";\n";
         std::string funcSignature = "{0} {1}({2})";
         std::string varArrayDefinition = "{0} {1}[{2}]";
+        std::string arrayInitialization = "{0}[{1}]({2})";
         std::string varDefinition = "{0} {1} = {2}";
         std::pair<std::string, std::string> codeBlock = {"\n{\n", "}\n"};
 
@@ -34,6 +35,8 @@ public:
         std::map<std::string, std::string> binaryOperationsMapping;
 
 
+        ConstructSetter(LanguageDefinition, VarArrayDefinition, varArrayDefinition);
+        ConstructSetter(LanguageDefinition, ArrayInitialization, arrayInitialization);
         ConstructSetter(LanguageDefinition, MainFuncName, mainFuncName);
         ConstructSetter(LanguageDefinition, NumberType, numberType);
         ConstructSetter(LanguageDefinition, FuncSignature, funcSignature);

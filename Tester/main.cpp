@@ -8,26 +8,12 @@
 
 using namespace std;
 
-int &NextErrorCode() {
+int &NextErrorCode()
+{
     static int ErrorCounter = 0;
     return --ErrorCounter;
 }
 
-std::map<std::string, std::string> InitCustomFunctions()
-{
-    FunctionInfo info("cut", {LanguageType::Double, LanguageType::Double,
-                              LanguageType::Double, LanguageType::Double});
-    std::map<std::string, std::string> functionsMapping;
-    const std::string funcCode = R"(
-    args f, a, s, e;
-    s1 = (-a + e);
-    s2 = (a - s);
-    return f & s1 & s2;)";
-    functionsMapping[info.Name()] = funcCode;
-    Functions::AddCustom(CustomFunction(info, funcCode));
-
-    return functionsMapping;
-}
 
 int main(int argc, char **argv)
 {
@@ -43,7 +29,7 @@ int main(int argc, char **argv)
     }
 
     CodeGenerator::LanguageDefinition langDef;
-    // langDef.functionsMapping = InitCustomFunctions();
+    langDef.arrayInitialization = "{{{2}}}";
     CodeGenerator gener(langDef);
 
     stringstream stream;

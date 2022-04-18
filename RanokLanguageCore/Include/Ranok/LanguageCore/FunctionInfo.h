@@ -12,6 +12,8 @@
 
 struct FunctionInfo
 {
+    FunctionInfo() = default;
+
     FunctionInfo(const std::string& name, const std::vector<LanguageType>& params, LanguageType returnType = LanguageType::Double, const std::string descr = ""):
         name(name),
         desc(descr),

@@ -13,14 +13,13 @@
 class CustomFunction
 {
 public:
-    CustomFunction(const FunctionInfo& info, const std::string &code);
     virtual ~CustomFunction() = default;
 
     void SetRoot(spExpression& root);
 
     inline const FunctionInfo& Info() const { return _info; }
     inline spExpression Root() { return _root; }
-    inline const std::vector<spArgumentExpression>& Args() const { return _args; }
+    inline const std::vector<spVariableExpression>& Args() const { return _args; }
 
     inline const std::string& Name() const { return _info.name; }
     inline const std::string& Code() const { return _code; }
@@ -30,12 +29,17 @@ public:
 
     static std::string ToString(const CustomFunction& func);
     static CustomFunction FromString(const std::string& str, int &endId);
+    static CustomFunction FromString(const std::string& name, const std::string& code);
+
+
+protected:
+    CustomFunction(const std::string& name, const std::string &code);
 
 
 private:
     FunctionInfo _info;
     spExpression _root;
-    std::vector<spArgumentExpression> _args;
+    std::vector<spVariableExpression> _args;
     Program _program;
     const std::string _code;
 };

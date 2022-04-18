@@ -35,14 +35,6 @@ ArrayExpression::ArrayExpression(const std::vector<spExpression>& values):
 }
 
 
-ArgumentExpression::ArgumentExpression(const std::string& name, const Range& range):
-    Expression(name),
-    range(range)
-{
-    
-}
-
-
 VariableExpression::VariableExpression(const std::string& name, spExpression child):
     Expression(name),
     child(child)
@@ -117,6 +109,13 @@ CustomFunctionExpression::CustomFunctionExpression(const FunctionInfo& function,
                                                    const std::vector<spExpression>& args):
     FunctionExpression(function, args),
     root(std::move(root))
+{
+
+}
+
+RangedVariableExpression::RangedVariableExpression(const std::string &name, spExpression child, Range range):
+    VariableExpression(name, child),
+    range(range)
 {
 
 }

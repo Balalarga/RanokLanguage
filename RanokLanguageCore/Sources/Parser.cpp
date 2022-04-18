@@ -98,7 +98,7 @@ void Parser::HandleArgument()
     Lexeme lexeme = LexerCheckedTop();
     spExpression expr;
     while (lexeme.Type() != Token::Endline) {
-        ArgumentExpression::Range range{-1, 1};
+        Range range{-1, 1};
 
         lexeme = LexerCheckedPop(Token::Id);
         std::string name = lexeme.Name();

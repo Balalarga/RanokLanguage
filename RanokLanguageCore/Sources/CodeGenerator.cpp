@@ -181,14 +181,14 @@ std::string CodeGenerator::DefineVariables(Program& program)
         if (auto expr = dynamic_cast<ArrayExpression*>(var->child.get()))
         {
             varCode << fmt::format(_languageDefinition.varArrayDefinition, _languageDefinition.numberType, var->name, expr->Values.size());
-            varCode << "{ ";
+            std::stringstream params;
             for (size_t i = 0; i < expr->Values.size(); ++i)
             {
-                varCode << GetExpressionCode(expr->Values[i].get());
+                params << GetExpressionCode(expr->Values[i].get());
                 if (i + 1 < expr->Values.size())
-                    varCode << ", ";
+                    params << ", ";
             }
-            varCode << " }";
+            varCode << " = " << fmt::format(_languageDefinition.arrayInitialization, _languageDefinition.numberType, expr->Values.size(), params.str());
         }
         else if(auto expr = dynamic_cast<FunctionExpression*>(var->child.get()))
         {
@@ -237,10 +237,6 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
         }
         stream << " }";
         return stream.str();
-    }
-    else if (auto* expr = dynamic_cast<ArgumentExpression*>(expression))
-    {
-        return expr->name;
     }
     else if (auto* expr = dynamic_cast<VariableExpression*>(expression))
     {

@@ -45,22 +45,6 @@ public:
 using spArrayExpression = std::shared_ptr<ArrayExpression>;
 
 
-class ArgumentExpression: public Expression
-{
-public:
-    struct Range
-    {
-        double min;
-        double max;
-    };
-
-    ArgumentExpression(const std::string& name, const Range& range);
-
-    const Range range;
-};
-using spArgumentExpression = std::shared_ptr<ArgumentExpression>;
-
-
 class VariableExpression: public Expression
 {
 public:
@@ -72,6 +56,20 @@ public:
     spExpression const child;
 };
 using spVariableExpression = std::shared_ptr<VariableExpression>;
+
+
+struct Range
+{
+    double min = -1, max = 1;
+};
+class RangedVariableExpression: public VariableExpression
+{
+public:
+    RangedVariableExpression(const std::string& name, spExpression child, Range range);
+
+    const Range range;
+};
+using spRangedVariableExpression = std::shared_ptr<RangedVariableExpression>;
 
 
 class UnaryOperation: public Expression

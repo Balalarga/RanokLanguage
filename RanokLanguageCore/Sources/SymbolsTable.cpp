@@ -15,9 +15,15 @@ SymbolsTable::SymbolsTable()
         _variables.push_back(std::make_shared<VariableExpression>(i.first, std::make_shared<NumberExpression>(i.second)));
 }
 
-spArgumentExpression SymbolsTable::CreateArgument(const std::string& name, const ArgumentExpression::Range& range)
+spVariableExpression SymbolsTable::CreateArgument(const std::string& name)
 {
-    _arguments.push_back(std::make_shared<ArgumentExpression>(name, range));
+    _arguments.push_back(std::make_shared<VariableExpression>(name, nullptr));
+    return _arguments.back();
+}
+
+spVariableExpression SymbolsTable::CreateArgument(const std::string &name, Range range)
+{
+    _arguments.push_back(std::make_shared<RangedVariableExpression>(name, nullptr, range));
     return _arguments.back();
 }
 
@@ -33,7 +39,7 @@ spNumberExpression SymbolsTable::CreateConstant(double value)
     return _constants.back();
 }
 
-spArgumentExpression SymbolsTable::FindArgument(const std::string& name)
+spVariableExpression SymbolsTable::FindArgument(const std::string& name)
 {
     for (auto& var: _arguments)
         if (var->name == name)
@@ -47,7 +53,7 @@ spVariableExpression SymbolsTable::FindVariable(const std::string& name)
     for (auto& var: _variables)
         if (var->name == name)
             return var;
-            
+
     return nullptr;
 }
 
@@ -56,6 +62,6 @@ spNumberExpression SymbolsTable::FindConstant(const std::string& name)
     for (auto& var: _constants)
         if (var->name == name)
             return var;
-            
+
     return nullptr;
 }

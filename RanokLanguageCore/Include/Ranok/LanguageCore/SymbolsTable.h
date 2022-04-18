@@ -16,22 +16,23 @@ class SymbolsTable
 public:
     SymbolsTable();
 
-    spArgumentExpression CreateArgument(const std::string& name, const ArgumentExpression::Range& range);
+    spVariableExpression CreateArgument(const std::string& name);
+    spVariableExpression CreateArgument(const std::string& name, Range range);
     spVariableExpression CreateVariable(const std::string& name, spExpression child);
     spNumberExpression   CreateConstant(double value);
 
-    spArgumentExpression FindArgument(const std::string& name);
+    spVariableExpression FindArgument(const std::string& name);
     spVariableExpression FindVariable(const std::string& name);
     spNumberExpression   FindConstant(const std::string& name);
 
-    inline const std::vector<spArgumentExpression>& Arguments(){ return _arguments; }
+    inline const std::vector<spVariableExpression>& Arguments(){ return _arguments; }
     inline const std::vector<spVariableExpression>& Variables(){ return _variables; }
     inline const std::vector<spNumberExpression>&   Constants(){ return _constants; }
 
     static std::map<std::string, double> GlobalConstants;
 
 private:
-    std::vector<spArgumentExpression> _arguments;
+    std::vector<spVariableExpression> _arguments;
     std::vector<spVariableExpression> _variables;
     std::vector<spNumberExpression>   _constants;
 };
