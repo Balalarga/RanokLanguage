@@ -25,6 +25,7 @@ public:
         std::string returnDef = "return {0}";
         std::string endLineDef = ";\n";
         std::string funcSignature = "{0} {1}({2})";
+        std::string varArrayDefinition = "{0} {1}[{2}]";
         std::string varDefinition = "{0} {1} = {2}";
         std::pair<std::string, std::string> codeBlock = {"\n{\n", "}\n"};
 

@@ -39,8 +39,8 @@ using spNumberExpression = std::shared_ptr<NumberExpression>;
 class ArrayExpression: public Expression
 {
 public:
-    ArrayExpression(size_t count);
-    const size_t Size;
+    ArrayExpression(const std::vector<spExpression>& values);
+    const std::vector<spExpression> Values;
 };
 using spArrayExpression = std::shared_ptr<ArrayExpression>;
 
@@ -106,7 +106,6 @@ using spBinaryOperation = std::shared_ptr<BinaryOperation>;
 class FunctionExpression: public Expression
 {
 public:
-    using FuncType = CheckedResult<double>(std::vector<spExpression>);
     FunctionExpression(const FunctionInfo& function, const std::vector<spExpression>& args);
 
     virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;

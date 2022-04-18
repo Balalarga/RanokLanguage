@@ -62,5 +62,5 @@ CustomFunction CustomFunction::FromString(const std::string &str, int& endId)
     name = StringUtility::Reduce(str.substr(0, codeStart++), "");
     code = StringUtility::Trim(str.substr(codeStart, codeEnd - codeStart));
     endId += codeEnd + 1;
-    return {{name, params}, code};
+    return CustomFunction({name, params}, code);
 }

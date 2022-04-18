@@ -29,21 +29,18 @@ Program Parser::Parse(Lexer lexer)
     Lexeme lexeme = LexerCheckedTop();
     while (!_lexer->Empty() && lexeme.Type() != Token::End && lexeme.Type() != Token::None)
     {
-        std::string tokenName;
-        tokenName = lexeme.Name();
-
         if (lexeme.Type() == Token::Id)
         {
-            if (CaseCompare(tokenName, "args", true))
+            if (CaseCompare(lexeme.Name(), "args", true))
             {
                 HandleArgument();
             }
-            else if(CaseCompare(tokenName, "return", true))
+            else if(CaseCompare(lexeme.Name(), "return", true))
             {
                 LexerCheckedPop();
                 program.Init(HandleReturn());
             }
-            else if (CaseCompare(tokenName, "var", true))
+            else if (CaseCompare(lexeme.Name(), "var", true))
             {
                 LexerCheckedPop();
                 HandleVariable();
@@ -139,21 +136,6 @@ void Parser::HandleArgument()
     }
 }
 
-
-void Parser::HandleConstant()
-{
-    Lexeme lexeme = LexerCheckedTop();
-    while(lexeme.Type() != Token::Endline)
-    {
-        lexeme = LexerCheckedPop(Token::Id);
-        std::string name = lexeme.Name();
-        LexerCheckedPop(Token::Assign);
-        lexeme = LexerCheckedPop();
-        Expr();
-    }
-    LexerCheckedPop();
-}
-
 void Parser::HandleVariable()
 {
     Lexeme lexeme = LexerCheckedTop();
@@ -168,6 +150,20 @@ spExpression Parser::HandleReturn()
     Lexeme lexeme = LexerCheckedTop();
     spExpression expr = Expr();
     return expr;
+}
+
+spExpression Parser::HandleArray()
+{
+    std::vector<spExpression> values;
+
+    while (LexerCheckedTop().Type() != Token::BraceClose)
+    {
+        values.push_back(Expr());
+        if (LexerCheckedTop().Type() == Token::Comma)
+            LexerCheckedPop();
+    }
+
+    return spArrayExpression(new ArrayExpression(values));
 }
 
 spExpression Parser::Expr()
@@ -216,6 +212,13 @@ spExpression Parser::Factor()
     {
         LexerCheckedPop();
         auto expr = Expr();
+        LexerCheckedPop();
+        return expr;
+    }
+    else if (lexeme.Type() == Token::BraceOpen)
+    {
+        LexerCheckedPop();
+        auto expr = HandleArray();
         LexerCheckedPop();
         return expr;
     }

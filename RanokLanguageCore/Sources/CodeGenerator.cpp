@@ -178,7 +178,27 @@ std::string CodeGenerator::DefineVariables(Program& program)
     std::stringstream varCode;
     for (auto& var: program.Table().Variables())
     {
-        varCode << fmt::format(_languageDefinition.varDefinition, _languageDefinition.numberType, var->name, GetExpressionCode(var->child.get()));
+        if (auto expr = dynamic_cast<ArrayExpression*>(var->child.get()))
+        {
+            varCode << fmt::format(_languageDefinition.varArrayDefinition, _languageDefinition.numberType, var->name, expr->Values.size());
+            varCode << "{ ";
+            for (size_t i = 0; i < expr->Values.size(); ++i)
+            {
+                varCode << GetExpressionCode(expr->Values[i].get());
+                if (i + 1 < expr->Values.size())
+                    varCode << ", ";
+            }
+            varCode << " }";
+        }
+        else if(auto expr = dynamic_cast<FunctionExpression*>(var->child.get()))
+        {
+            if (expr->function.ReturnType() == LanguageType::DoubleArray)
+                varCode << fmt::format(_languageDefinition.varArrayDefinition, _languageDefinition.numberType, var->name, GetExpressionCode(var->child.get()));
+        }
+        else
+        {
+            varCode << fmt::format(_languageDefinition.varDefinition, _languageDefinition.numberType, var->name, GetExpressionCode(var->child.get()));
+        }
         varCode << _languageDefinition.endLineDef;
     }
     return varCode.str();
@@ -204,6 +224,19 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
     if (auto* expr = dynamic_cast<NumberExpression*>(expression))
     {
         return expr->name;
+    }
+    else if (auto* expr = dynamic_cast<ArrayExpression*>(expression))
+    {
+        std::stringstream stream;
+        stream << "{ ";
+        for (size_t i = 0; i < expr->Values.size(); ++i)
+        {
+            stream << GetExpressionCode(expr->Values[i].get());
+            if (i + 1 < expr->Values.size())
+                stream << ", ";
+        }
+        stream << " }";
+        return stream.str();
     }
     else if (auto* expr = dynamic_cast<ArgumentExpression*>(expression))
     {

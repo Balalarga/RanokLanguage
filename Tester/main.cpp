@@ -25,7 +25,6 @@ std::map<std::string, std::string> InitCustomFunctions()
     return f & s1 & s2;)";
     functionsMapping[info.Name()] = funcCode;
     Functions::AddCustom(CustomFunction(info, funcCode));
-    // Functions::AddCustom(std::make_shared<CustomFunction>(info, funcCode));
 
     return functionsMapping;
 }
@@ -37,15 +36,14 @@ int main(int argc, char **argv)
         file = argv[1];
 
     fstream codeFile(file);
-    if (!codeFile) {
+    if (!codeFile)
+    {
         cout << "Couldn't open file " << file << endl;
         return NextErrorCode();
     }
 
     CodeGenerator::LanguageDefinition langDef;
-
-    langDef.functionsMapping = InitCustomFunctions();
-
+    // langDef.functionsMapping = InitCustomFunctions();
     CodeGenerator gener(langDef);
 
     stringstream stream;
@@ -61,7 +59,8 @@ int main(int argc, char **argv)
     {
         std::queue<std::pair<int, Expression *>> nodes;
         program.Root()->Visit(nodes);
-        while (!nodes.empty()) {
+        while (!nodes.empty())
+        {
             auto &top = nodes.front();
 
             for (int i = 1; i < top.first; ++i)

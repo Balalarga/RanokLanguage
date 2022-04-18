@@ -28,6 +28,8 @@ enum class Token
     Union,
     SquareBracketOpen,
     SquareBracketClose,
+    BraceOpen,
+    BraceClose,
     Colon
 };
 
@@ -71,6 +73,10 @@ static std::string TokenToString(Token token)
             return "SquareBracketOpen";
         case Token::SquareBracketClose:
             return "SquareBracketClose";
+        case Token::BraceOpen:
+            return "BraceOpen";
+        case Token::BraceClose:
+            return "BraceClose";
         case Token::Colon:
             return "Colon";
     }

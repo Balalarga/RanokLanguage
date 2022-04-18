@@ -27,9 +27,9 @@ NumberExpression::NumberExpression(double value):
 }
 
 
-ArrayExpression::ArrayExpression(size_t size):
-    Expression("["+std::to_string(size)+"]"),
-    Size(size)
+ArrayExpression::ArrayExpression(const std::vector<spExpression>& values):
+    Expression("["+std::to_string(values.size())+"]"),
+    Values(values)
 {
 
 }
