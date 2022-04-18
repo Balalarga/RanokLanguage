@@ -31,6 +31,15 @@ CustomFunction::CustomFunction(const FunctionInfo &info, const std::string &code
     }
     customDesc << ")";
     _info.desc = customDesc.str();
+
+    // Find out return value type
+    if (_program.Root())
+    {
+        if (dynamic_cast<ArrayExpression*>(_program.Root().get()))
+            _info.returnType = LanguageType::DoubleArray;
+        else if (auto expr = dynamic_cast<FunctionExpression*>(_program.Root().get()))
+            _info.returnType = expr->function.ReturnType();
+    }
 }
 
 std::string CustomFunction::ToString(const CustomFunction &func)
