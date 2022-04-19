@@ -102,42 +102,85 @@ void Parser::HandleArgument()
 {
     Lexeme lexeme = LexerCheckedTop();
     spExpression expr;
-    while (lexeme.Type() != Token::Endline) {
-        Range range{-1, 1};
+    while (lexeme.Type() != Token::Endline)
+    {
+        std::vector<Range> ranges(1);
 
         lexeme = LexerCheckedPop(Token::Id);
         std::string name = lexeme.Name();
         lexeme = LexerCheckedPop();
-        if (lexeme.Type() == Token::ParenOpen)
+        bool isArray = false;
+        if (lexeme.Type() == Token::SquareBracketOpen)
         {
-            bool negative = false;
+            isArray = true;
             lexeme = LexerCheckedPop();
-            if (lexeme.Type() == Token::Minus)
+            if (lexeme.IsNumber())
             {
-                negative = true;
-                lexeme = LexerCheckedPop(Token::Number);
-            }
-            range.min = lexeme.Value();
-            lexeme = LexerCheckedPop();
-            if (lexeme.Type() == Token::Comma) {
-                range.min = negative ? -range.min : range.min;
+                ranges.resize(static_cast<unsigned>(lexeme.Value()));
                 lexeme = LexerCheckedPop();
-                negative = false;
-                if (lexeme.Type() == Token::Minus) {
-                    negative = true;
-                    lexeme = LexerCheckedPop(Token::Number);
-                }
-                range.max = negative ? -lexeme.Value() : lexeme.Value();
-                LexerCheckedPop();
-            }
-            else
-            {
-                range.max = range.min;
-                range.min = -range.min;
             }
             lexeme = LexerCheckedPop();
         }
-        _program->Table().CreateArgument(name, range);
+
+        if (lexeme.Type() == Token::ParenOpen)
+        {
+            lexeme = LexerCheckedPop();
+            if (isArray)
+            {
+                size_t counter = 0;
+                while (lexeme.Type() != Token::ParenClose && counter < ranges.size())
+                {
+                    bool negative = false;
+                    if (lexeme.Type() == Token::Minus)
+                    {
+                        negative = true;
+                        lexeme = LexerCheckedPop(Token::Number);
+                    }
+                    ranges[counter].min = lexeme.Value();
+                    lexeme = LexerCheckedPop();
+                    if (lexeme.Type() == Token::Comma)
+                    {
+                        ++counter;   
+                        lexeme = LexerCheckedPop();
+                    }
+                }
+            }
+            else
+            {
+                bool negative = false;
+                if (lexeme.Type() == Token::Minus)
+                {
+                    negative = true;
+                    lexeme = LexerCheckedPop(Token::Number);
+                }
+                ranges[0].min = lexeme.Value();
+                lexeme = LexerCheckedPop();
+                if (lexeme.Type() == Token::Comma)
+                {
+                    ranges[0].min = negative ? -ranges[0].min : ranges[0].min;
+                    lexeme = LexerCheckedPop();
+                    negative = false;
+                    if (lexeme.Type() == Token::Minus)
+                    {
+                        negative = true;
+                        lexeme = LexerCheckedPop(Token::Number);
+                    }
+                    ranges[0].max = negative ? -lexeme.Value() : lexeme.Value();
+                    LexerCheckedPop();
+                }
+                else
+                {
+                    ranges[0].max = ranges[0].min;
+                    ranges[0].min = -ranges[0].min;
+                }
+            }
+            lexeme = LexerCheckedPop();
+        }
+
+        if (isArray)
+            _program->Table().CreateArgument(name, ranges);
+        else
+            _program->Table().CreateArgument(name, ranges[0]);
     }
 }
 

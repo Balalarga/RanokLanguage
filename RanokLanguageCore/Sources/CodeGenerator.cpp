@@ -141,7 +141,12 @@ std::string CodeGenerator::Generate(Program& program)
     std::vector<std::string> argsDef;
     const auto& args = program.Table().Arguments();
     for (auto& a: args)
-        argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a->name));
+    {
+        if (ArrayExpression* child = dynamic_cast<ArrayExpression*>(a->child.get()))
+            argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberArrayType, a->name));
+        else
+            argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a->name));
+    }
 
     code << DefineFunctions(program);
     code << EnterFunction(_languageDefinition.numberType, _languageDefinition.mainFuncName, fmt::format("{}", fmt::join(argsDef, ", ")));
@@ -163,7 +168,12 @@ std::string CodeGenerator::DefineFunctions(Program& program)
     {
         argsDef.clear();
         for (auto& a: func.Args())
-            argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a->name));        
+        {
+            if (ArrayExpression* child = dynamic_cast<ArrayExpression*>(a->child.get()))
+                argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberArrayType, a->name));
+            else
+                argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a->name));
+        }
 
         code << EnterFunction(_languageDefinition.numberType, func.Info().Name(), fmt::format("{}", fmt::join(argsDef, ", ")));
         code << DefineVariables(func.GetProgram());

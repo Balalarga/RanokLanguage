@@ -17,13 +17,22 @@ SymbolsTable::SymbolsTable()
 
 spVariableExpression SymbolsTable::CreateArgument(const std::string& name)
 {
-    _arguments.push_back(std::make_shared<VariableExpression>(name, nullptr));
+    _arguments.push_back(std::make_shared<VariableExpression>(name, std::make_shared<NumberExpression>(0)));
+    _argumentRanges.push_back({{}});
     return _arguments.back();
 }
 
 spVariableExpression SymbolsTable::CreateArgument(const std::string &name, Range range)
 {
-    _arguments.push_back(std::make_shared<RangedVariableExpression>(name, nullptr, range));
+    _arguments.push_back(std::make_shared<VariableExpression>(name, std::make_shared<NumberExpression>(0)));
+    _argumentRanges.push_back({range});
+    return _arguments.back();
+}
+
+spVariableExpression SymbolsTable::CreateArgument(const std::string& name, std::vector<Range> ranges)
+{
+    _arguments.push_back(std::make_shared<VariableExpression>(name, std::make_shared<ArrayExpression>(std::vector<spExpression>(ranges.size(), std::make_shared<NumberExpression>(0)))));
+    _argumentRanges.push_back(ranges);
     return _arguments.back();
 }
 

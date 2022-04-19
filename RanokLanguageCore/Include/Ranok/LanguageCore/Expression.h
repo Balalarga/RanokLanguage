@@ -68,20 +68,6 @@ public:
 using spArrayGetterExpression = std::shared_ptr<ArrayGetterExpression>;
 
 
-struct Range
-{
-    double min = -1, max = 1;
-};
-class RangedVariableExpression: public VariableExpression
-{
-public:
-    RangedVariableExpression(const std::string& name, spExpression child, Range range);
-
-    const Range range;
-};
-using spRangedVariableExpression = std::shared_ptr<RangedVariableExpression>;
-
-
 class UnaryOperation: public Expression
 {
 public:

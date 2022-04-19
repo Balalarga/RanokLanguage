@@ -155,7 +155,7 @@ Lexeme Lexer::Pop(Token token)
         return {Token::None, "None", 0};
 
     if (token != Token::None && _lexemes.front().Type() != token)
-        _error = "Error: Token is " + TokenToString(_lexemes.front().Type()) + "Expected " + TokenToString(token);
+        _error = "Error: Token is " + TokenToString(_lexemes.front().Type()) + ", expected " + TokenToString(token);
 
     return _lexemes.front();
 }

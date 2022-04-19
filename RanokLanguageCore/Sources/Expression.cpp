@@ -121,10 +121,3 @@ CustomFunctionExpression::CustomFunctionExpression(const FunctionInfo& function,
 {
 
 }
-
-RangedVariableExpression::RangedVariableExpression(const std::string &name, spExpression child, Range range):
-    VariableExpression(name, child),
-    range(range)
-{
-
-}

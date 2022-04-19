@@ -22,6 +22,7 @@ public:
     {
         std::string mainFuncName = "__main";
         std::string numberType = "double";
+        std::string numberArrayType = "double*";
         std::string returnDef = "return {0}";
         std::string endLineDef = ";\n";
         std::string funcSignature = "{0} {1}({2})";
@@ -35,6 +36,7 @@ public:
         std::map<std::string, std::string> binaryOperationsMapping;
 
 
+        ConstructSetter(LanguageDefinition, NumberArrayType, numberArrayType);
         ConstructSetter(LanguageDefinition, VarArrayDefinition, varArrayDefinition);
         ConstructSetter(LanguageDefinition, ArrayInitialization, arrayInitialization);
         ConstructSetter(LanguageDefinition, MainFuncName, mainFuncName);
