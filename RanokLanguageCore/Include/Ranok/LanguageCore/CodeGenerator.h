@@ -23,19 +23,26 @@ public:
         std::string mainFuncName = "__main";
         std::string numberType = "double";
         std::string numberArrayType = "double*";
+        std::string arrayParamSignature = "{0} {1}";
         std::string returnDef = "return {0}";
         std::string endLineDef = ";\n";
         std::string funcSignature = "{0} {1}({2})";
         std::string varArrayDefinition = "{0} {1}[{2}]";
         std::string arrayInitialization = "{0}[{1}]({2})";
+        std::string arrayEquasion = "*{0} = {1}";
         std::string varDefinition = "{0} {1} = {2}";
         std::pair<std::string, std::string> codeBlock = {"\n{\n", "}\n"};
+
+        bool arrayReturnAsParam = false;
 
         std::map<std::string, std::string> functionsMapping;
         std::map<std::string, std::string> unaryOperationsMapping;
         std::map<std::string, std::string> binaryOperationsMapping;
 
 
+        ConstructSetter(LanguageDefinition, ArrayEquasion, arrayEquasion);
+        ConstructSetter(LanguageDefinition, ArrayReturnAsParam, arrayReturnAsParam);
+        ConstructSetter(LanguageDefinition, ArrayParamSignature, arrayParamSignature);
         ConstructSetter(LanguageDefinition, NumberArrayType, numberArrayType);
         ConstructSetter(LanguageDefinition, VarArrayDefinition, varArrayDefinition);
         ConstructSetter(LanguageDefinition, ArrayInitialization, arrayInitialization);

@@ -16,24 +16,24 @@ using namespace std;
 
 std::vector<FunctionInfo> Functions::_functions
 {
-        { "abs" , {LanguageType::Double}, LanguageType::Double, "abs(number)" },
-        { "sqrt" , {LanguageType::Double}, LanguageType::Double, "sqrt(number)" },
-        { "sin", {LanguageType::Double}, LanguageType::Double, "sin(number)" },
-        { "tan" , {LanguageType::Double}, LanguageType::Double, "tan(number)" },
-        { "cos" , {LanguageType::Double}, LanguageType::Double, "cos(number)" },
-        { "arctan", {LanguageType::Double}, LanguageType::Double, "arctan(number)" },
-        { "arcsin", {LanguageType::Double}, LanguageType::Double, "arcsin(number)" },
-        { "arccos", {LanguageType::Double}, LanguageType::Double, "arccos(number)" },
-        { "cosh", {LanguageType::Double}, LanguageType::Double, "cosh(number)" },
-        { "sinh", {LanguageType::Double}, LanguageType::Double, "sinh(number)" },
-        { "tanh", {LanguageType::Double}, LanguageType::Double, "tanh(number)" },
-        { "exp", {LanguageType::Double}, LanguageType::Double, "exp(number)" },
-        { "ln", {LanguageType::Double}, LanguageType::Double, "ln(number)" },
-        { "log", {LanguageType::Double}, LanguageType::Double, "log(number)" },
-        { "log10", {LanguageType::Double},LanguageType::Double, "log10(number)" },
-        { "log2", {LanguageType::Double}, LanguageType::Double, "log2(number)" },
-        { "ceil", {LanguageType::Double}, LanguageType::Double, "ceil(number)" },
-        { "floor", {LanguageType::Double}, LanguageType::Double, "floor(number)" }
+        { "abs" , {LanguageType::Double}, {LanguageType::Double}, "abs(number)" },
+        { "sqrt" , {LanguageType::Double}, {LanguageType::Double}, "sqrt(number)" },
+        { "sin", {LanguageType::Double}, {LanguageType::Double}, "sin(number)" },
+        { "tan" , {LanguageType::Double}, {LanguageType::Double}, "tan(number)" },
+        { "cos" , {LanguageType::Double}, {LanguageType::Double}, "cos(number)" },
+        { "arctan", {LanguageType::Double}, {LanguageType::Double}, "arctan(number)" },
+        { "arcsin", {LanguageType::Double}, {LanguageType::Double}, "arcsin(number)" },
+        { "arccos", {LanguageType::Double}, {LanguageType::Double}, "arccos(number)" },
+        { "cosh", {LanguageType::Double}, {LanguageType::Double}, "cosh(number)" },
+        { "sinh", {LanguageType::Double}, {LanguageType::Double}, "sinh(number)" },
+        { "tanh", {LanguageType::Double}, {LanguageType::Double}, "tanh(number)" },
+        { "exp", {LanguageType::Double}, {LanguageType::Double}, "exp(number)" },
+        { "ln", {LanguageType::Double}, {LanguageType::Double}, "ln(number)" },
+        { "log", {LanguageType::Double}, {LanguageType::Double}, "log(number)" },
+        { "log10", {LanguageType::Double},{LanguageType::Double}, "log10(number)" },
+        { "log2", {LanguageType::Double}, {LanguageType::Double}, "log2(number)" },
+        { "ceil", {LanguageType::Double}, {LanguageType::Double}, "ceil(number)" },
+        { "floor", {LanguageType::Double}, {LanguageType::Double}, "floor(number)" }
 };
 
 std::vector<CustomFunction> Functions::_customFunctions

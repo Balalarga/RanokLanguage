@@ -14,7 +14,7 @@ struct FunctionInfo
 {
     FunctionInfo() = default;
 
-    FunctionInfo(const std::string& name, const std::vector<LanguageType>& params, LanguageType returnType = LanguageType::Double, const std::string descr = ""):
+    FunctionInfo(const std::string& name, const std::vector<LanguageType>& params, LanguageReturnType returnType = LanguageReturnType{LanguageType::Double, 1}, const std::string descr = ""):
         name(name),
         desc(descr),
         params(params),
@@ -32,14 +32,14 @@ struct FunctionInfo
     inline const std::string& Name() const { return name; }
     inline const std::string& Desc() const { return desc; }
     inline const std::vector<LanguageType>& Params() const { return params; }
-    inline const LanguageType ReturnType() const { return returnType; }
+    inline const LanguageReturnType ReturnType() const { return returnType; }
 
 
 private:
     std::string name;
     std::string desc;
     std::vector<LanguageType> params;
-    LanguageType returnType;
+    LanguageReturnType returnType;
 
     friend class CustomFunction;
 };

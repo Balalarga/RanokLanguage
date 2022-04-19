@@ -143,7 +143,7 @@ std::string CodeGenerator::Generate(Program& program)
     for (auto& a: args)
     {
         if (ArrayExpression* child = dynamic_cast<ArrayExpression*>(a->child.get()))
-            argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberArrayType, a->name));
+            argsDef.push_back(fmt::format(_languageDefinition.arrayParamSignature, _languageDefinition.numberArrayType, a->name, child->Values.size()));
         else
             argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a->name));
     }
@@ -170,14 +170,24 @@ std::string CodeGenerator::DefineFunctions(Program& program)
         for (auto& a: func.Args())
         {
             if (ArrayExpression* child = dynamic_cast<ArrayExpression*>(a->child.get()))
-                argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberArrayType, a->name));
+                argsDef.push_back(fmt::format(_languageDefinition.arrayParamSignature, _languageDefinition.numberArrayType, a->name, child->Values.size()));
             else
                 argsDef.push_back(fmt::format("{0} {1}", _languageDefinition.numberType, a->name));
+        }
+        if (_languageDefinition.arrayReturnAsParam && func.Info().ReturnType().Type == LanguageType::DoubleArray)
+        {
+            if (auto var = dynamic_cast<VariableExpression*>(func.Root().get()))
+            {
+                if (auto arr = dynamic_cast<ArrayExpression*>(var->child.get()))
+                    argsDef.push_back(fmt::format(_languageDefinition.arrayParamSignature, _languageDefinition.numberArrayType, var->name, arr->Values.size()));
+            }
         }
 
         code << EnterFunction(_languageDefinition.numberType, func.Info().Name(), fmt::format("{}", fmt::join(argsDef, ", ")));
         code << DefineVariables(func.GetProgram());
-        code << fmt::format(_languageDefinition.returnDef, GetExpressionCode(func.Root().get())) << _languageDefinition.endLineDef;
+        if (!_languageDefinition.arrayReturnAsParam)
+            code << fmt::format(_languageDefinition.returnDef, GetExpressionCode(func.Root().get())) << _languageDefinition.endLineDef;
+        
         code << LeaveFunction();
     }
     return code.str();
@@ -190,20 +200,41 @@ std::string CodeGenerator::DefineVariables(Program& program)
     {
         if (auto expr = dynamic_cast<ArrayExpression*>(var->child.get()))
         {
-            varCode << fmt::format(_languageDefinition.varArrayDefinition, _languageDefinition.numberType, var->name, expr->Values.size());
-            std::stringstream params;
-            for (size_t i = 0; i < expr->Values.size(); ++i)
+            if (_languageDefinition.arrayReturnAsParam && var.get() == program.Root().get())
             {
-                params << GetExpressionCode(expr->Values[i].get());
-                if (i + 1 < expr->Values.size())
-                    params << ", ";
+                varCode << fmt::format(_languageDefinition.arrayEquasion, var->name, GetExpressionCode(var->child.get()));
             }
-            varCode << " = " << fmt::format(_languageDefinition.arrayInitialization, _languageDefinition.numberType, expr->Values.size(), params.str());
+            else
+            {
+                varCode << fmt::format(_languageDefinition.varArrayDefinition, _languageDefinition.numberType, var->name, expr->Values.size());
+                std::stringstream params;
+                for (size_t i = 0; i < expr->Values.size(); ++i)
+                {
+                    params << GetExpressionCode(expr->Values[i].get());
+                    if (i + 1 < expr->Values.size())
+                        params << ", ";
+                }
+                varCode << " = " << fmt::format(_languageDefinition.arrayInitialization, _languageDefinition.numberType, expr->Values.size(), params.str());
+            }
         }
         else if(auto expr = dynamic_cast<FunctionExpression*>(var->child.get()))
         {
-            if (expr->function.ReturnType() == LanguageType::DoubleArray)
-                varCode << fmt::format(_languageDefinition.varArrayDefinition, _languageDefinition.numberType, var->name, GetExpressionCode(var->child.get()));
+            if (expr->function.ReturnType().Type == LanguageType::DoubleArray)
+            {
+                if (!_languageDefinition.arrayReturnAsParam)
+                {
+                    varCode << fmt::format(_languageDefinition.varArrayDefinition, _languageDefinition.numberType, var->name, expr->function.ReturnType().Count);
+                    varCode << " = " << GetExpressionCode(var->child.get());
+                }
+                else
+                {
+                    varCode << fmt::format(_languageDefinition.varArrayDefinition, _languageDefinition.numberType, var->name, expr->function.ReturnType().Count);
+                    varCode << _languageDefinition.endLineDef;
+                    expr->params.push_back(var);
+                    varCode << GetExpressionCode(var->child.get());
+                    expr->params.pop_back();
+                }
+            }
         }
         else
         {

@@ -36,10 +36,25 @@ CustomFunction::CustomFunction(const std::string& name, const std::string &code)
     // Find out return value type
     if (_program.Root())
     {
-        if (dynamic_cast<ArrayExpression*>(_program.Root().get()))
-            _info.returnType = LanguageType::DoubleArray;
+        if (auto arr = dynamic_cast<ArrayExpression*>(_program.Root().get()))
+        {
+            _info.returnType = {LanguageType::DoubleArray, arr->Values.size()};
+        }
+        else if (auto var = dynamic_cast<VariableExpression*>(_program.Root().get()))
+        {
+            if (auto arr = dynamic_cast<ArrayExpression*>(var->child.get()))
+            {
+                _info.returnType = {LanguageType::DoubleArray, arr->Values.size()};
+            }
+            else
+            {
+                _info.returnType.Type = LanguageType::Double;
+            }
+        }
         else if (auto expr = dynamic_cast<FunctionExpression*>(_program.Root().get()))
+        {
             _info.returnType = expr->function.ReturnType();
+        }
     }
 }
 

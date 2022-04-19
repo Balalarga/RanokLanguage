@@ -30,11 +30,11 @@ public:
     spVariableExpression FindVariable(const std::string& name);
     spNumberExpression   FindConstant(const std::string& name);
 
-    inline const std::vector<spVariableExpression>& Arguments(){ return _arguments; }
-    inline const std::vector<spVariableExpression>& Variables(){ return _variables; }
-    inline const std::vector<spNumberExpression>&   Constants(){ return _constants; }
+    inline std::vector<spVariableExpression>& Arguments(){ return _arguments; }
+    inline std::vector<spVariableExpression>& Variables(){ return _variables; }
+    inline std::vector<spNumberExpression>&   Constants(){ return _constants; }
     
-    inline const std::vector<std::vector<Range>>& Ranges(){ return _argumentRanges; }
+    inline std::vector<std::vector<Range>>& Ranges(){ return _argumentRanges; }
 
 
     static std::map<std::string, double> GlobalConstants;

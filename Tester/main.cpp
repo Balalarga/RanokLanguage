@@ -14,6 +14,20 @@ int &NextErrorCode()
     return --ErrorCounter;
 }
 
+void CreateCustoms()
+{
+    std::string name = "SpaceMoveX";
+    std::string code = R"(
+        args S[3];
+
+        v = {S[0] + 1, S[1], S[2]};
+
+        return v;
+    )";
+
+    CustomFunction custom = CustomFunction::FromString(name, code);
+    Functions::AddCustom(custom);
+}
 
 int main(int argc, char **argv)
 {
@@ -28,8 +42,11 @@ int main(int argc, char **argv)
         return NextErrorCode();
     }
 
+    CreateCustoms();
+
     CodeGenerator::LanguageDefinition langDef;
     langDef.arrayInitialization = "{{{2}}}";
+    langDef.arrayReturnAsParam = true;
     CodeGenerator gener(langDef);
 
     stringstream stream;

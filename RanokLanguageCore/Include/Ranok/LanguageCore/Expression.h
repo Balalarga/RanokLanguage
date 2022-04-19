@@ -105,7 +105,7 @@ public:
     virtual void Visit(std::queue<std::pair<int, Expression*>>& container, int depth = 0) override;
 
     const FunctionInfo function;
-    const std::vector<spExpression> params;
+    std::vector<spExpression> params;
 };
 using spFunctionExpression = std::shared_ptr<FunctionExpression>;
 
