@@ -1,12 +1,9 @@
-//args x, y, z;
 args s[3];
 
 
-t4 = { 0.5, sin(4) };
+s2[3] = SomeFunc(s);
 
 r = 1;
-w = r^2 - s[0]^2 - s[1]^2 - s[2]^2;
-
-q = SpaceMoveX(s);
+w = r^2 - s2[0]^2 - s2[1]^2 - s2[2]^2;
 
 return w;

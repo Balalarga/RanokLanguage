@@ -14,6 +14,8 @@
     #define Debug(msg)
 #endif
 
+static unsigned CurrentArrayVarSize = 0;
+
 Program Parser::Parse(Lexer lexer)
 {
     auto CaseCompare = [](std::string str1, const std::string& str2, bool sensitive = false)
@@ -188,8 +190,20 @@ void Parser::HandleVariable()
 {
     Lexeme lexeme = LexerCheckedTop();
     std::string name = lexeme.Name();
-    LexerCheckedPop(Token::Assign);
-    LexerCheckedPop();
+    lexeme = LexerCheckedPop();
+    if (lexeme.Type() == Token::SquareBracketOpen)
+    {
+        lexeme = LexerCheckedPop(Token::Number);
+        CurrentArrayVarSize = static_cast<unsigned>(lexeme.Value());
+        lexeme = LexerCheckedPop(Token::SquareBracketClose);
+        lexeme = LexerCheckedPop();
+    }
+    else
+    {
+        CurrentArrayVarSize = 0;
+    }
+    lexeme = LexerCheckedPop();
+
     _program->Table().CreateVariable(name, Expr());
 }
 
@@ -243,7 +257,14 @@ bool Parser::TryParseArrayGetter(spExpression& node)
         LexerCheckedPop();
         unsigned id = static_cast<unsigned>(lexeme.Value());
         if (auto expr = std::dynamic_pointer_cast<ArrayExpression>(var->child))
+        {
             node = std::make_shared<ArrayGetterExpression>(var, id);
+        }
+        else if(auto expr = std::dynamic_pointer_cast<FunctionExpression>(var->child))
+        {
+            if (expr->function.ReturnType().Type == LanguageType::DoubleArray)
+                node = std::make_shared<ArrayGetterExpression>(var, id);
+        }
     }
     LexerCheckedPop();
     return true;
@@ -300,31 +321,43 @@ spExpression Parser::Factor()
     }
     else if(lexeme.Type() == Token::Id)
     {
-        auto prev = lexeme;
+        Lexeme prev = lexeme;
+        std::string name = lexeme.Name();
         LexerCheckedPop();
-        if (auto expr = _program->Table().FindArgument(prev.Name()))
+        if (auto expr = _program->Table().FindArgument(name))
             return expr;
 
-        if (auto expr = _program->Table().FindConstant(prev.Name()))
+        if (auto expr = _program->Table().FindConstant(name))
             return expr;
 
-        if (auto func = Functions::Find(prev.Name()))
+        if (auto func = Functions::Find(name))
         {
+            if (func->ReturnType().Count != CurrentArrayVarSize)
+            {
+                _error = "Array size error near function " + name;
+                return nullptr;
+            }
+
             std::vector<spExpression> args;
             HandleFunctionArgs(args);
             return std::make_shared<FunctionExpression>(*func, args);
         }
 
-        if (auto func = Functions::FindCustom(prev.Name()))
+        if (auto func = Functions::FindCustom(name))
         {
+            if (func->Info().ReturnType().Count != CurrentArrayVarSize)
+            {
+                _error = "Array size error near function " + name;
+                return nullptr;
+            }
+
             std::vector<spExpression> args;
             HandleFunctionArgs(args);
             return std::make_shared<CustomFunctionExpression>(func->Info(), func->Root(), args);
         }
 
-        if (auto expr = _program->Table().FindVariable(prev.Name()))
+        if (auto expr = _program->Table().FindVariable(name))
         {
-            Debug();
             return expr;
         }
     }

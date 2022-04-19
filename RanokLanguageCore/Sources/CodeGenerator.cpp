@@ -6,10 +6,9 @@
 #include "Functions.h"
 #include "Operations.h"
 
-#include <fmt/format.h>
-
 #include <iostream>
 #include <set>
+
 
 std::map<std::string, std::string> CodeGenerator::defaultFunctionsMappings
 {
@@ -179,13 +178,18 @@ std::string CodeGenerator::DefineFunctions(Program& program)
             if (auto var = dynamic_cast<VariableExpression*>(func.Root().get()))
             {
                 if (auto arr = dynamic_cast<ArrayExpression*>(var->child.get()))
-                    argsDef.push_back(fmt::format(_languageDefinition.arrayParamSignature, _languageDefinition.numberArrayType, var->name, arr->Values.size()));
+                    argsDef.push_back(fmt::format(_languageDefinition.arrayResultParamSignature, _languageDefinition.numberArrayType, var->name, arr->Values.size()));
             }
         }
 
-        code << EnterFunction(_languageDefinition.numberType, func.Info().Name(), fmt::format("{}", fmt::join(argsDef, ", ")));
+        if (_languageDefinition.arrayReturnAsParam && func.Info().ReturnType().Type == LanguageType::DoubleArray)
+            code << EnterFunction("void", func.Info().Name(), fmt::format("{}", fmt::join(argsDef, ", ")));
+        else
+            code << EnterFunction(_languageDefinition.numberType, func.Info().Name(), fmt::format("{}", fmt::join(argsDef, ", ")));
+
         code << DefineVariables(func.GetProgram());
-        if (!_languageDefinition.arrayReturnAsParam)
+
+        if (!_languageDefinition.arrayReturnAsParam || func.Info().ReturnType().Type != LanguageType::DoubleArray)
             code << fmt::format(_languageDefinition.returnDef, GetExpressionCode(func.Root().get())) << _languageDefinition.endLineDef;
         
         code << LeaveFunction();
@@ -202,7 +206,11 @@ std::string CodeGenerator::DefineVariables(Program& program)
         {
             if (_languageDefinition.arrayReturnAsParam && var.get() == program.Root().get())
             {
-                varCode << fmt::format(_languageDefinition.arrayEquasion, var->name, GetExpressionCode(var->child.get()));
+                std::vector<std::string> args;
+                for (auto& i: expr->Values)
+                    args.push_back(GetExpressionCode(i.get()));
+
+                varCode << _languageDefinition.fillResultArray(var->name, args);
             }
             else
             {

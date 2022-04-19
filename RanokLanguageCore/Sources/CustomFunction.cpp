@@ -30,21 +30,20 @@ CustomFunction::CustomFunction(const std::string& name, const std::string &code)
         if (i != Args().size() - 1)
             customDesc << ", ";
     }
-    customDesc << ")";
-    _info.desc = customDesc.str();
+    customDesc << ") -> ";
 
     // Find out return value type
     if (_program.Root())
     {
         if (auto arr = dynamic_cast<ArrayExpression*>(_program.Root().get()))
         {
-            _info.returnType = {LanguageType::DoubleArray, arr->Values.size()};
+            _info.returnType = {LanguageType::DoubleArray, static_cast<unsigned>(arr->Values.size())};
         }
         else if (auto var = dynamic_cast<VariableExpression*>(_program.Root().get()))
         {
             if (auto arr = dynamic_cast<ArrayExpression*>(var->child.get()))
             {
-                _info.returnType = {LanguageType::DoubleArray, arr->Values.size()};
+                _info.returnType = {LanguageType::DoubleArray, static_cast<unsigned>(arr->Values.size())};
             }
             else
             {
@@ -56,6 +55,12 @@ CustomFunction::CustomFunction(const std::string& name, const std::string &code)
             _info.returnType = expr->function.ReturnType();
         }
     }
+
+    if (_info.returnType.Count == 1)
+        customDesc << "number";
+    else
+        customDesc << "[" << _info.returnType.Count << "]";
+    _info.desc = customDesc.str();
 }
 
 std::string CustomFunction::ToString(const CustomFunction &func)
@@ -70,7 +75,22 @@ CustomFunction CustomFunction::FromString(const std::string &str, int& endId)
     std::string name;
     std::string code;
     int codeStart = str.find_first_of("{");
-    int codeEnd = str.find_first_of("}");
+    int braceCounter = 0;
+    int codeEnd = str.size();
+    for (size_t i = codeStart; i < str.size(); ++i)
+    {
+        if (str[i] == '{')
+            ++braceCounter;
+        else if (str[i] == '}')
+            --braceCounter;
+
+        if (braceCounter == 0)
+        {
+            codeEnd = i;
+            break;
+        }
+    }
+
     name = StringUtility::Reduce(str.substr(0, codeStart++), "");
     code = StringUtility::Trim(str.substr(codeStart, codeEnd - codeStart));
     endId += codeEnd + 1;

@@ -16,11 +16,11 @@ int &NextErrorCode()
 
 void CreateCustoms()
 {
-    std::string name = "SpaceMoveX";
+    std::string name = "SomeFunc";
     std::string code = R"(
-        args S[3];
+        args s[3];
 
-        v = {S[0] + 1, S[1], S[2]};
+        v[3] = { s[0] + 1, s[1], s[2] };
 
         return v;
     )";

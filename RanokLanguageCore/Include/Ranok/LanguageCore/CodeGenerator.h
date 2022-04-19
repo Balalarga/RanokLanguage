@@ -9,6 +9,8 @@
 
 #include <map>
 #include <sstream>
+#include <functional>
+#include <fmt/format.h>
 
 
 #define ConstructSetter(Class, FuncName, Var) \
@@ -24,14 +26,28 @@ public:
         std::string numberType = "double";
         std::string numberArrayType = "double*";
         std::string arrayParamSignature = "{0} {1}";
+        std::string arrayResultParamSignature = "{0} {1}";
         std::string returnDef = "return {0}";
         std::string endLineDef = ";\n";
         std::string funcSignature = "{0} {1}({2})";
         std::string varArrayDefinition = "{0} {1}[{2}]";
         std::string arrayInitialization = "{0}[{1}]({2})";
-        std::string arrayEquasion = "*{0} = {1}";
         std::string varDefinition = "{0} {1} = {2}";
         std::pair<std::string, std::string> codeBlock = {"\n{\n", "}\n"};
+
+        std::function<std::string(const std::string&, const std::vector<std::string>&)> fillResultArray = [](const std::string& varName, const std::vector<std::string>& args) -> std::string
+        {
+            std::stringstream stream;
+            stream << "{ ";
+            for (size_t i = 0; i < args.size(); ++i)
+            {
+                stream << args[i];
+                if (i + 1 < args.size())
+                    stream << ", ";
+            }
+            stream << " }";
+            return  fmt::format("*{0} = {1}", varName, stream.str());
+        };
 
         bool arrayReturnAsParam = false;
 
@@ -40,7 +56,8 @@ public:
         std::map<std::string, std::string> binaryOperationsMapping;
 
 
-        ConstructSetter(LanguageDefinition, ArrayEquasion, arrayEquasion);
+        ConstructSetter(LanguageDefinition, FillResultArray, fillResultArray);
+        ConstructSetter(LanguageDefinition, ArrayResultParamSignature, arrayResultParamSignature);
         ConstructSetter(LanguageDefinition, ArrayReturnAsParam, arrayReturnAsParam);
         ConstructSetter(LanguageDefinition, ArrayParamSignature, arrayParamSignature);
         ConstructSetter(LanguageDefinition, NumberArrayType, numberArrayType);
