@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        cout << "Root is empty";
+        cout << parser.Error() << endl;
     }
 
     return 0;

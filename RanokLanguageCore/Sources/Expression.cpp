@@ -35,6 +35,15 @@ ArrayExpression::ArrayExpression(const std::vector<spExpression>& values):
 }
 
 
+ArrayGetterExpression::ArrayGetterExpression(spVariableExpression root, unsigned id):
+    Expression(root->name + "[" + std::to_string(id) + "]"),
+    Root(root),
+    Id(id)
+{
+    
+}
+
+
 VariableExpression::VariableExpression(const std::string& name, spExpression child):
     Expression(name),
     child(child)

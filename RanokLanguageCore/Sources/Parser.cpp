@@ -8,6 +8,11 @@
 
 #include <iostream>
 
+#if 0
+    #define Debug(msg) cout << msg << endl;
+#else
+    #define Debug(msg)
+#endif
 
 Program Parser::Parse(Lexer lexer)
 {
@@ -183,9 +188,30 @@ spExpression Parser::Expr()
     return node;
 }
 
+bool Parser::TryParseArrayGetter(spExpression& node)
+{
+    auto var = std::dynamic_pointer_cast<VariableExpression>(node);
+    if (!var)
+        return false;
+
+    Lexeme lexeme = LexerCheckedPop();
+    if (lexeme.IsNumber())
+    {
+        LexerCheckedPop();
+        unsigned id = static_cast<unsigned>(lexeme.Value());
+        if (auto expr = std::dynamic_pointer_cast<ArrayExpression>(var->child))
+            node = std::make_shared<ArrayGetterExpression>(var, id);
+    }
+    LexerCheckedPop();
+    return true;
+}
+
 spExpression Parser::Term()
 {
     spExpression node = Factor();
+    if (LexerCheckedTop().Type() == Token::SquareBracketOpen)
+        TryParseArrayGetter(node);
+    
     Lexeme lexeme = LexerCheckedTop();
     while (lexeme.Type() == Token::Pow      ||
            lexeme.Type() == Token::Multiply ||
@@ -196,6 +222,7 @@ spExpression Parser::Term()
         node = std::make_shared<BinaryOperation>(*binaryInfo, node, Term());
         lexeme = LexerCheckedTop();
     }
+
     return node;
 }
 
@@ -253,7 +280,10 @@ spExpression Parser::Factor()
         }
 
         if (auto expr = _program->Table().FindVariable(prev.Name()))
+        {
+            Debug();
             return expr;
+        }
     }
     return nullptr;
 }

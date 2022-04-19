@@ -32,6 +32,7 @@ private:
     void HandleFunctionArgs();
     spExpression HandleReturn();
     spExpression HandleArray();
+    bool TryParseArrayGetter(spExpression& node);
     
     spExpression Term();
     spExpression Factor();

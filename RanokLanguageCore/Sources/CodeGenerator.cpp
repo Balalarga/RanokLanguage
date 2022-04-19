@@ -238,6 +238,10 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
         stream << " }";
         return stream.str();
     }
+    else if (auto* expr = dynamic_cast<ArrayGetterExpression*>(expression))
+    {
+        return fmt::format("{0}[{1}]", expr->Root->name, expr->Id);
+    }
     else if (auto* expr = dynamic_cast<VariableExpression*>(expression))
     {
         return expr->name;

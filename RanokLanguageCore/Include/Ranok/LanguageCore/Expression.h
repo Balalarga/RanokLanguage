@@ -58,6 +58,16 @@ public:
 using spVariableExpression = std::shared_ptr<VariableExpression>;
 
 
+class ArrayGetterExpression: public Expression
+{
+public:
+    ArrayGetterExpression(spVariableExpression root, unsigned id);
+    const spVariableExpression Root;
+    const unsigned Id;
+};
+using spArrayGetterExpression = std::shared_ptr<ArrayGetterExpression>;
+
+
 struct Range
 {
     double min = -1, max = 1;
