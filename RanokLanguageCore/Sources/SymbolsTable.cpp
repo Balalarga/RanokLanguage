@@ -44,8 +44,27 @@ spVariableExpression SymbolsTable::CreateVariable(const std::string& name, spExp
 
 spNumberExpression SymbolsTable::CreateConstant(double value)
 {
-    _constants.push_back(std::make_shared<NumberExpression>(value));
-    return _constants.back();
+    auto shared = std::make_shared<NumberExpression>(value);
+    _constants.push_back(shared);
+    return shared;
+}
+
+spArrayExpression SymbolsTable::CreateConstant(std::vector<double> value)
+{
+    std::vector<spExpression> arrValues(value.size());
+    for (auto& v: value)
+        arrValues.push_back(std::make_shared<NumberExpression>(v));
+
+    auto shared = std::make_shared<ArrayExpression>(arrValues);
+    _constants.push_back(shared);
+    return shared;
+}
+
+spArrayExpression SymbolsTable::CreateConstant(std::vector<spExpression> value)
+{
+    auto shared = std::make_shared<ArrayExpression>(value);
+    _constants.push_back(shared);
+    return shared;
 }
 
 spVariableExpression SymbolsTable::FindArgument(const std::string& name)
@@ -66,7 +85,7 @@ spVariableExpression SymbolsTable::FindVariable(const std::string& name)
     return nullptr;
 }
 
-spNumberExpression SymbolsTable::FindConstant(const std::string& name)
+spExpression SymbolsTable::FindConstant(const std::string& name)
 {
     for (auto& var: _constants)
         if (var->name == name)

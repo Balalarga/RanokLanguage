@@ -25,14 +25,16 @@ public:
     spVariableExpression CreateArgument(const std::string& name, std::vector<Range> ranges);
     spVariableExpression CreateVariable(const std::string& name, spExpression child);
     spNumberExpression   CreateConstant(double value);
+    spArrayExpression    CreateConstant(std::vector<double> value);
+    spArrayExpression    CreateConstant(std::vector<spExpression> value);
 
     spVariableExpression FindArgument(const std::string& name);
     spVariableExpression FindVariable(const std::string& name);
-    spNumberExpression   FindConstant(const std::string& name);
+    spExpression FindConstant(const std::string& name);
 
     inline std::vector<spVariableExpression>& Arguments(){ return _arguments; }
     inline std::vector<spVariableExpression>& Variables(){ return _variables; }
-    inline std::vector<spNumberExpression>&   Constants(){ return _constants; }
+    inline std::vector<spExpression>&         Constants(){ return _constants; }
     
     inline std::vector<std::vector<Range>>& Ranges(){ return _argumentRanges; }
 
@@ -44,7 +46,7 @@ private:
     std::vector<spVariableExpression> _arguments;
     std::vector<std::vector<Range>> _argumentRanges;
     std::vector<spVariableExpression> _variables;
-    std::vector<spNumberExpression>   _constants;
+    std::vector<spExpression> _constants;
 };
 
 #endif //RANOKLANGUAGE_SYMBOLSTABLE_H
