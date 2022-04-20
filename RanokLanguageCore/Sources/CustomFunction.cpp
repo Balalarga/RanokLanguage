@@ -27,6 +27,10 @@ CustomFunction::CustomFunction(const std::string& name, const std::string &code)
     for (size_t i = 0; i < Args().size(); ++i)
     {
         customDesc << Args()[i]->name;
+        if (auto arr = dynamic_cast<ArrayExpression*>(Args()[i]->child.get()))
+        {
+            customDesc << "[" << arr->Values.size() << "]";
+        }
         if (i != Args().size() - 1)
             customDesc << ", ";
     }
@@ -54,6 +58,36 @@ CustomFunction::CustomFunction(const std::string& name, const std::string &code)
         {
             _info.returnType = expr->function.ReturnType();
         }
+//        std::queue<std::pair<int, Expression *>> nodes;
+//        _program.Root()->Visit(nodes);
+
+//        for (auto& func: _program.Table().Variables())
+//            func->VisitRecur(nodes);
+
+//        while (!nodes.empty())
+//        {
+//            auto &top = nodes.front();
+
+//            for (int i = 1; i < top.first; ++i)
+//                std::cout << "  ";
+
+//            if (auto func = dynamic_cast<FunctionExpression *>(top.second))
+//            {
+//                std::cout << func->function.Name() + "(";
+//                for (auto &a: func->params)
+//                    std::cout << a->name << ", ";
+//                std::cout << ")\n";
+//            }
+//            else
+//            {
+//                std::cout << "Node: " << top.second->name << std::endl;
+//            }
+//            nodes.pop();
+//        }
+    }
+    else
+    {
+        std::cout << "CustomFunction " << name << " error\n";
     }
 
     if (_info.returnType.Count == 1)

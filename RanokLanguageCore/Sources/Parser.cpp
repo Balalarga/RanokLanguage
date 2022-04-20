@@ -7,9 +7,10 @@
 #include "Functions.h"
 
 #include <iostream>
+#include <fmt/format.h>
 
 #if 0
-    #define Debug(msg) cout << msg << endl;
+    #define Debug(msg) std::cout << "[Debug] " << msg << std::endl;
 #else
     #define Debug(msg)
 #endif
@@ -29,7 +30,7 @@ Program Parser::Parse(Lexer lexer)
         }
         return str1 == str2;
     };
-
+    Debug("------------------Begin program--------------------");
     Program program;
     _program = &program;
     _lexer = &lexer;
@@ -40,31 +41,37 @@ Program Parser::Parse(Lexer lexer)
         {
             if (CaseCompare(lexeme.Name(), "args", true))
             {
+                Debug(fmt::format("Process args"));
                 HandleArgument();
             }
             else if(CaseCompare(lexeme.Name(), "return", true))
             {
+                Debug(fmt::format("Process return"));
                 LexerCheckedPop();
                 program.Init(HandleReturn());
             }
             else if (CaseCompare(lexeme.Name(), "var", true))
             {
+                Debug(fmt::format("Process variable"));
                 LexerCheckedPop();
                 HandleVariable();
             }
             else
             {
+                Debug(fmt::format("Process variable"));
                 HandleVariable();
             }
         }
         else
         {
             _error = "Unknown token " + lexeme.Name() + " at " + std::to_string(lexeme.Line()) + " line";
+            Debug(fmt::format("Lexer error: {}", _error));
             break;
         }
         if (!_lexer->Error().empty())
         {
             _error = _lexer->Error() + " at " + std::to_string(lexeme.Line()) + " line";
+            Debug(fmt::format("Lexer error: {}", _error));
             break;
         }
 
@@ -72,6 +79,7 @@ Program Parser::Parse(Lexer lexer)
     }
     _program = nullptr;
     _lexer = nullptr;
+    Debug("-------------------End program---------------------");
     return program;
 }
 
@@ -180,9 +188,15 @@ void Parser::HandleArgument()
         }
 
         if (isArray)
+        {
+            Debug(fmt::format("Create argument array: {}", name));
             _program->Table().CreateArgument(name, ranges);
+        }
         else
+        {
+            Debug(fmt::format("Create argument: {}", name));
             _program->Table().CreateArgument(name, ranges[0]);
+        }
     }
 }
 
@@ -204,6 +218,7 @@ void Parser::HandleVariable()
     }
     lexeme = LexerCheckedPop();
 
+    Debug(fmt::format("Create variable: {}", name));
     _program->Table().CreateVariable(name, Expr());
 }
 
@@ -237,6 +252,7 @@ spExpression Parser::Expr()
            lexeme.Type() == Token::Cross ||
            lexeme.Type() == Token::Union)
     {
+        Debug(fmt::format("Expr: {}", TokenToString(lexeme.Type())));
         LexerCheckedPop();
         auto binaryInfo = Operations::BinaryFromString(lexeme.Name());
         node = std::make_shared<BinaryOperation>(*binaryInfo, node, Term());
@@ -281,6 +297,7 @@ spExpression Parser::Term()
            lexeme.Type() == Token::Multiply ||
            lexeme.Type() == Token::Divide)
     {
+        Debug(fmt::format("Term: {}", TokenToString(lexeme.Type())));
         LexerCheckedPop();
         auto binaryInfo = Operations::BinaryFromString(lexeme.Name());
         node = std::make_shared<BinaryOperation>(*binaryInfo, node, Term());
@@ -297,26 +314,32 @@ spExpression Parser::Factor()
     {
         auto constant = _program->Table().CreateConstant(lexeme.Value());
         LexerCheckedPop();
+        Debug(fmt::format("Constant: {}", constant->name));
         return constant;
     }
     else if(lexeme.Type() == Token::ParenOpen)
     {
         LexerCheckedPop();
+        Debug("Begin Paren");
         auto expr = Expr();
         LexerCheckedPop();
+        Debug(fmt::format("End Paren: {}", TokenToString(LexerCheckedTop().Type())));
         return expr;
     }
     else if (lexeme.Type() == Token::BraceOpen)
     {
         LexerCheckedPop();
+        Debug("Begin Brace");
         auto expr = HandleArray();
         LexerCheckedPop();
+        Debug(fmt::format("End Brace: {}", TokenToString(LexerCheckedTop().Type())));
         return expr;
     }
     else if(lexeme.Type() == Token::Minus)
     {
         LexerCheckedPop();
         auto unaryInfo = Operations::UnaryFromString(lexeme.Name());
+        Debug(fmt::format("Unary minus: {}", unaryInfo->Name()));
         return std::make_shared<UnaryOperation>(*unaryInfo, Factor());
     }
     else if(lexeme.Type() == Token::Id)
@@ -325,14 +348,20 @@ spExpression Parser::Factor()
         std::string name = lexeme.Name();
         LexerCheckedPop();
         if (auto expr = _program->Table().FindArgument(name))
+        {
+            Debug(fmt::format("Argument: {}", expr->name));
             return expr;
+        }
 
         if (auto expr = _program->Table().FindConstant(name))
+        {
+            Debug(fmt::format("Constant: {}", expr->name));
             return expr;
+        }
 
         if (auto func = Functions::Find(name))
         {
-            if (func->ReturnType().Count != CurrentArrayVarSize)
+            if (func->ReturnType().Type == LanguageType::DoubleArray && func->ReturnType().Count != CurrentArrayVarSize)
             {
                 _error = "Array size error near function " + name;
                 return nullptr;
@@ -340,12 +369,13 @@ spExpression Parser::Factor()
 
             std::vector<spExpression> args;
             HandleFunctionArgs(args);
+            Debug(fmt::format("Function: {}", func->Name()));
             return std::make_shared<FunctionExpression>(*func, args);
         }
 
         if (auto func = Functions::FindCustom(name))
         {
-            if (func->Info().ReturnType().Count != CurrentArrayVarSize)
+            if (func->Info().ReturnType().Type == LanguageType::DoubleArray && func->Info().ReturnType().Count != CurrentArrayVarSize)
             {
                 _error = "Array size error near function " + name;
                 return nullptr;
@@ -353,11 +383,13 @@ spExpression Parser::Factor()
 
             std::vector<spExpression> args;
             HandleFunctionArgs(args);
+            Debug(fmt::format("CustomFunction: {}", func->Info().Name()));
             return std::make_shared<CustomFunctionExpression>(func->Info(), func->Root(), args);
         }
 
         if (auto expr = _program->Table().FindVariable(name))
         {
+            Debug(fmt::format("Variable: {}", expr->name));
             return expr;
         }
     }

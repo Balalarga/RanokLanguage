@@ -229,12 +229,7 @@ std::string CodeGenerator::DefineVariables(Program& program)
         {
             if (expr->function.ReturnType().Type == LanguageType::DoubleArray)
             {
-                if (!_languageDefinition.arrayReturnAsParam)
-                {
-                    varCode << fmt::format(_languageDefinition.varArrayDefinition, _languageDefinition.numberType, var->name, expr->function.ReturnType().Count);
-                    varCode << " = " << GetExpressionCode(var->child.get());
-                }
-                else
+                if (_languageDefinition.arrayReturnAsParam)
                 {
                     varCode << fmt::format(_languageDefinition.varArrayDefinition, _languageDefinition.numberType, var->name, expr->function.ReturnType().Count);
                     varCode << _languageDefinition.endLineDef;
@@ -242,6 +237,15 @@ std::string CodeGenerator::DefineVariables(Program& program)
                     varCode << GetExpressionCode(var->child.get());
                     expr->params.pop_back();
                 }
+                else
+                {
+                    varCode << fmt::format(_languageDefinition.varArrayDefinition, _languageDefinition.numberType, var->name, expr->function.ReturnType().Count);
+                    varCode << " = " << GetExpressionCode(var->child.get());
+                }
+            }
+            else
+            {
+                varCode << fmt::format(_languageDefinition.varDefinition, _languageDefinition.numberType, var->name, GetExpressionCode(var->child.get()));
             }
         }
         else

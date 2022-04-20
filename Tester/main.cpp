@@ -16,17 +16,34 @@ int &NextErrorCode()
 
 void CreateCustoms()
 {
-    std::string name = "SomeFunc";
-    std::string code = R"(
-        args s[3];
+    std::vector<std::pair<std::string, std::string>> funcs{
+//         {"SymetryAxis", R"(
+// args o;
+// return abs(o);)"},
+//         {"Prisma", R"(
+// args x, y, z, lenX, lenY, lenZ;
+// return (lenX - abs(x)) & (lenY - abs(y)) & (lenZ - abs(z));)"},
+//         {"Cube", R"(
+// args x, y, z, size;
+// return Prisma(x, y, z, size, size, size);)"},
+        {"CircleArrayEvenXY", R"(
+args s[3], halfCount;
+no = halfCount;
+ro = sqrt(s[0]^2 + s[1]^2);
+tet = arctan(s[1] / s[0]);
 
-        v[3] = { s[0] + 1, s[1], s[2] };
+ff = tet * no;
+mu = 4 / PI / no * (sin(ff) - sin(3*ff)/9 + sin(5*ff)/25 - sin(7*ff)/49); // Похоже на костыль
 
-        return v;
-    )";
-
-    CustomFunction custom = CustomFunction::FromString(name, code);
-    Functions::AddCustom(custom);
+R = 4;
+x11 = ro * cos(mu) - R; // радиус вычитается именно из косинуса
+y11 = ro * sin(mu);
+sn[3] = { x11, y11, s[2] };
+return sn;)"}
+    };
+    
+    for (auto& i: funcs)
+        Functions::AddCustom(CustomFunction::FromString(i.first, i.second));
 }
 
 int main(int argc, char **argv)
@@ -43,6 +60,27 @@ int main(int argc, char **argv)
     }
 
     CreateCustoms();
+    auto glslGener = CodeGenerator::LanguageDefinition()
+        .MainFuncName("__resultFunc")
+        .Functions({{"abs", "abs"}})
+        .NumberType("float")
+        .NumberArrayType("float")
+        .ArrayParamSignature("{0} {1}[{2}]")
+        .ArrayReturnAsParam(true)
+        .ArrayResultParamSignature("out {0} {1}[{2}]")
+        .FillResultArray([](const std::string& varName, const std::vector<std::string>& params) -> std::string
+        {
+            std::stringstream stream;
+
+            for (size_t i = 0; i < params.size(); ++i)
+            {
+                stream << varName << "[" << i << "]" << " = " << params[i];
+                if (i + 1 < params.size())
+                    stream << ";\n";
+            }
+
+            return stream.str();
+        });
 
     CodeGenerator::LanguageDefinition langDef;
     langDef.arrayInitialization = "{{{2}}}";
