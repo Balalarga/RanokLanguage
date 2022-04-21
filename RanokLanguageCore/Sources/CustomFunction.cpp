@@ -15,7 +15,12 @@ void CustomFunction::SetRoot(spExpression& root)
 CustomFunction::CustomFunction(const std::string& name, const std::string &code):
     _code(code)
 {
-    _info.name = name;
+    auto nameNtag = StringUtility::Split(name, ":");
+    _info.name = nameNtag[0];
+    if (nameNtag.size() != 1)
+    {
+        _info.tags = StringUtility::Split(nameNtag[1], ".");
+    }
 
     Parser parser;
     _program = parser.Parse(Lexer::CreateFrom(code));
@@ -127,7 +132,18 @@ CustomFunction::CustomFunction(const std::string& name, const std::string &code)
 std::string CustomFunction::ToString(const CustomFunction &func)
 {
     std::stringstream stream;
-    stream << func.Name() << "\n{\n" << func.Code() << "\n}\n";
+    stream << func.Name();
+    if (func.Info().Tags().size() > 0)
+    {
+        stream << ":";
+        for (size_t i = 0; i < func.Info().Tags().size(); ++i)
+        {
+            stream << func.Info().Tags()[i];
+            if (i < func.Info().Tags().size()-1)
+                stream << ".";
+        }
+    }
+    stream << "\n{\n" << func.Code() << "\n}\n";
     return stream.str();
 }
 

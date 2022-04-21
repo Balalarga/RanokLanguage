@@ -51,3 +51,18 @@ std::string StringUtility::GetRandomString(int len)
     return result;
 }
 
+std::vector<std::string> StringUtility::Split(std::string string, const std::string& delimiter)
+{
+    std::vector<std::string> result;
+
+    size_t pos = 0;
+    while ((pos = string.find(delimiter)) != std::string::npos)
+    {
+        result.push_back(string.substr(0, pos));
+        string.erase(0, pos + delimiter.length());
+    }
+    result.push_back(string);
+
+    return result;
+}
+

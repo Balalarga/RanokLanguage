@@ -28,7 +28,7 @@ struct FunctionInfo
         return name < oth.name;
     }
 
-
+    inline const std::vector<std::string>& Tags() const { return tags; }
     inline const std::string& Name() const { return name; }
     inline const std::string& Desc() const { return desc; }
     inline const std::vector<LanguageType>& Params() const { return params; }
@@ -36,6 +36,7 @@ struct FunctionInfo
 
 
 private:
+    std::vector<std::string> tags;
     std::string name;
     std::string desc;
     std::vector<LanguageType> params;
