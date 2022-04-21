@@ -9,7 +9,7 @@
 #include <iostream>
 #include <fmt/format.h>
 
-#if 0
+#if 1
     #define Debug(msg) std::cout << "[Debug] " << msg << std::endl;
 #else
     #define Debug(msg)
