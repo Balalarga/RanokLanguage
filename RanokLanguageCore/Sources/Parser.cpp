@@ -146,11 +146,28 @@ void Parser::HandleArgument()
                         negative = true;
                         lexeme = LexerCheckedPop(Token::Number);
                     }
-                    ranges[counter].min = lexeme.Value();
+                    ranges[counter].min = negative ? -lexeme.Value() : lexeme.Value();
                     lexeme = LexerCheckedPop();
+                    if (lexeme.Type() == Token::Colon)
+                    {
+                        lexeme = LexerCheckedPop();
+                        negative = false;
+                        if (lexeme.Type() == Token::Minus)
+                        {
+                            negative = true;
+                            lexeme = LexerCheckedPop(Token::Number);
+                        }
+                        ranges[0].max = negative ? -lexeme.Value() : lexeme.Value();
+                        lexeme = LexerCheckedPop();
+                    }
+                    else
+                    {
+                        ranges[counter].max = std::abs(ranges[counter].min);
+                        ranges[counter].min = -ranges[counter].max;
+                    }
                     if (lexeme.Type() == Token::Comma)
                     {
-                        ++counter;   
+                        ++counter;
                         lexeme = LexerCheckedPop();
                     }
                 }
@@ -165,7 +182,7 @@ void Parser::HandleArgument()
                 }
                 ranges[0].min = lexeme.Value();
                 lexeme = LexerCheckedPop();
-                if (lexeme.Type() == Token::Comma)
+                if (lexeme.Type() == Token::Colon)
                 {
                     ranges[0].min = negative ? -ranges[0].min : ranges[0].min;
                     lexeme = LexerCheckedPop();
