@@ -46,7 +46,8 @@ public:
                     stream << ", ";
             }
             stream << " }";
-            return  fmt::format("*{0} = {1}", varName, stream.str());
+
+            return fmt::format("*{0} = {1}", varName, stream.str());
         };
 
         bool arrayReturnAsParam = false;

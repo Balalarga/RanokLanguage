@@ -37,3 +37,17 @@ std::string StringUtility::Reduce(const std::string& str,
     return result;
 }
 
+std::string StringUtility::GetRandomString(int len)
+{
+    static const char alphanum[] =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+    std::string result;
+    result.reserve(len);
+
+    for (int i = 0; i < len; ++i)
+        result += alphanum[rand() % (sizeof(alphanum) - 1)];
+
+    return result;
+}
+

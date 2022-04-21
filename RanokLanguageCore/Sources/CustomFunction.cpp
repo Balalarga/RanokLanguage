@@ -41,49 +41,49 @@ CustomFunction::CustomFunction(const std::string& name, const std::string &code)
     {
         if (auto arr = dynamic_cast<ArrayExpression*>(_program.Root().get()))
         {
-            std::cout << "Return array expression with size "<< arr->Values.size() << std::endl;
+//            std::cout << "Return array expression with size "<< arr->Values.size() << std::endl;
             _info.returnType = {LanguageType::DoubleArray, static_cast<unsigned>(arr->Values.size())};
         }
         else if (auto var = dynamic_cast<VariableExpression*>(_program.Root().get()))
         {
             if (auto arr = dynamic_cast<ArrayExpression*>(var->child.get()))
             {
-                std::cout << "Return var has array expression with size "<< arr->Values.size() << std::endl;
+//                std::cout << "Return var has array expression with size "<< arr->Values.size() << std::endl;
                 _info.returnType = {LanguageType::DoubleArray, static_cast<unsigned>(arr->Values.size())};
             }
             else
             {
-                std::cout << "Return var has number expressio" << std::endl;
+//                std::cout << "Return var has number expressio" << std::endl;
                 _info.returnType.Type = LanguageType::Double;
             }
         }
         else if (auto expr = dynamic_cast<FunctionExpression*>(_program.Root().get()))
         {
             _info.returnType = expr->function.ReturnType();
-            std::cout << "Return function has type ";
+//            std::cout << "Return function has type ";
 
-            if (_info.returnType.Type == LanguageType::DoubleArray)
-                std::cout << "Array [" << _info.returnType.Count << "]";
-            else
-                std::cout << "Number";
+//            if (_info.returnType.Type == LanguageType::DoubleArray)
+//                std::cout << "Array [" << _info.returnType.Count << "]";
+//            else
+//                std::cout << "Number";
 
-            std::cout << std::endl;
+//            std::cout << std::endl;
         }
         else
         {
             _info.returnType.Count = 1;
             _info.returnType.Type = LanguageType::Double;
-            std::cout << "Function has type ";
+//            std::cout << "Function has type ";
 
-            if (_info.returnType.Type == LanguageType::DoubleArray)
-                std::cout << "Array [" << _info.returnType.Count << "]";
-            else
-                std::cout << "Number";
+//            if (_info.returnType.Type == LanguageType::DoubleArray)
+//                std::cout << "Array [" << _info.returnType.Count << "]";
+//            else
+//                std::cout << "Number";
 
-            std::cout << std::endl;
+//            std::cout << std::endl;
         }
 
-        std::cout << "CustomFunction "<<name<<std::endl;
+//        std::cout << "CustomFunction "<<name<<std::endl;
 
 //        std::queue<std::pair<int, Expression *>> nodes;
 //        _program.Root()->Visit(nodes);
@@ -112,10 +112,10 @@ CustomFunction::CustomFunction(const std::string& name, const std::string &code)
 //            nodes.pop();
 //        }
     }
-    else
-    {
-        std::cout << "CustomFunction " << name << " error\n";
-    }
+//    else
+//    {
+//        std::cout << "CustomFunction " << name << " error\n";
+//    }
 
     if (_info.returnType.Count == 1)
         customDesc << "number";

@@ -16,6 +16,9 @@ public:
                               const std::string& fill = " ",
                               const std::string& whitespace = " \t\n");
 
+    static std::string GetRandomString(int len);
+
+
 private:
     StringUtility() = delete;
 };

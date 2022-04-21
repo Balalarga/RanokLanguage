@@ -280,16 +280,11 @@ std::string CodeGenerator::GetExpressionCode(Expression* expression)
     }
     else if (auto* expr = dynamic_cast<ArrayExpression*>(expression))
     {
-        std::stringstream stream;
-        stream << "{ ";
-        for (size_t i = 0; i < expr->Values.size(); ++i)
-        {
-            stream << GetExpressionCode(expr->Values[i].get());
-            if (i + 1 < expr->Values.size())
-                stream << ", ";
-        }
-        stream << " }";
-        return stream.str();
+        std::vector<std::string> args;
+        for (auto& i: expr->Values)
+            args.push_back(GetExpressionCode(i.get()));
+
+        return _languageDefinition.fillResultArray(expr->name, args);
     }
     else if (auto* expr = dynamic_cast<ArrayGetterExpression*>(expression))
     {

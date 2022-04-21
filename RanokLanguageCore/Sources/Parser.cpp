@@ -9,7 +9,7 @@
 #include <iostream>
 #include <fmt/format.h>
 
-#if 1
+#if 0
     #define Debug(msg) std::cout << "[Debug] " << msg << std::endl;
 #else
     #define Debug(msg)
@@ -240,6 +240,7 @@ spExpression Parser::HandleArray()
             LexerCheckedPop();
     }
 
+    Debug(fmt::format("Create array[{}]", values.size()));
     return spArrayExpression(new ArrayExpression(values));
 }
 
