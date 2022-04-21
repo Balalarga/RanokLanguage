@@ -27,10 +27,17 @@ public:
 
     static CheckedResult<double> Cut(const std::vector<spExpression>& params);
 
+    static const std::vector<std::pair<std::vector<std::string>, std::vector<CustomFunction*>>>& GetTagedCustomFuncs();
+
+
+protected:
+    static void AddTags(CustomFunction *func);
+
 
 private:
     static std::vector<FunctionInfo> _functions;
     static std::vector<CustomFunction> _customFunctions;
+    static std::vector<std::pair<std::vector<std::string>, std::vector<CustomFunction*>>> _tagedFuncs;
 };
 
 #endif //RANOKLANGUAGE_FUNCTIONS_H
