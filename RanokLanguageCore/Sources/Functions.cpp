@@ -41,11 +41,6 @@ std::vector<CustomFunction> Functions::_customFunctions
 
 };
 
-std::vector<std::pair<std::vector<std::string>, std::vector<CustomFunction*>>> Functions::_tagedFuncs
-{
-
-};
-
 size_t InitialCustomFunctionsSize = 0;
 
 
@@ -113,45 +108,18 @@ const std::vector<CustomFunction>& Functions::GetAllCustoms()
 void Functions::AddCustom(const CustomFunction& function)
 {
     if (!FindCustom(function.Name()))
-    {
         _customFunctions.push_back(function);
-        AddTags(&_customFunctions[_customFunctions.size()-1]);
-    }
 }
 
-const std::vector<std::pair<std::vector<std::string>, std::vector<CustomFunction*>>>& Functions::GetTagedCustomFuncs()
+std::map<string, std::vector<CustomFunction*>> Functions::GetTagedCustomFuncs()
 {
+    std::map<std::string, std::vector<CustomFunction*>> _tagedFuncs;
+    for (CustomFunction& f: _customFunctions)
+    {
+        if (_tagedFuncs.find(f.Info().Tags()) == _tagedFuncs.end())
+            _tagedFuncs[f.Info().Tags()] = {&f};
+        else
+            _tagedFuncs[f.Info().Tags()].push_back(&f);
+    }
     return _tagedFuncs;
-}
-
-void Functions::AddTags(CustomFunction* func)
-{
-    bool globOk = false;
-    for (size_t i = 0; i < _tagedFuncs.size(); ++i)
-    {
-        if (_tagedFuncs[i].first.size() == func->Info().Tags().size())
-        {
-            bool ok = true;
-            for (size_t j = 0; j < _tagedFuncs[i].first.size(); ++j)
-            {
-                if (_tagedFuncs[i].first[j] != func->Info().Tags()[j])
-                    ok = false;
-            }
-            if (ok)
-            {
-                globOk = true;
-                _tagedFuncs[i].second.push_back(func);
-                break;
-            }
-        }
-    }
-
-    if (!globOk)
-        _tagedFuncs.push_back({func->Info().Tags(), {func}});
-
-    auto tagComparator = [](const std::pair<std::vector<std::string>, std::vector<CustomFunction*>>& a, const std::pair<std::vector<std::string>, std::vector<CustomFunction*>>& b)
-    {
-        return a.first.size() > b.first.size();
-    };
-    std::sort(_tagedFuncs.begin(), _tagedFuncs.end(), tagComparator);
 }
