@@ -27,11 +27,12 @@ private:
     Lexeme LexerCheckedTop();
 
     void HandleArgument();
-    void HandleConstant();
     void HandleVariable();
     void HandleFunctionArgs(std::vector<spExpression>& args);
     void HandleFunctionArgs();
     spExpression HandleReturn();
+    spExpression HandleArray();
+    bool TryParseArrayGetter(spExpression& node);
     
     spExpression Term();
     spExpression Factor();

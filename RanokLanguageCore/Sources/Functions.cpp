@@ -14,142 +14,26 @@
 
 using namespace std;
 
-#define CheckParams(params, count) \
-    if (params.size() != count) \
-    { \
-        cout << __FUNCTION__ << ": parameters error(must be " << count << ")\n"; \
-        return false; \
-    }
-
-CheckedResult<double> Sqrt(const std::vector<spExpression>& params)
+std::vector<FunctionInfo> Functions::_functions
 {
-    CheckParams(params, 1)
-    return std::sqrt(params[0]->GetValue());
-}
-CheckedResult<double> Abs(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::fabs(params[0]->GetValue());
-}
-CheckedResult<double> Sin(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::sin(params[0]->GetValue());
-}
-CheckedResult<double> Cos(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::cos(params[0]->GetValue());
-}
-CheckedResult<double> Tan(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::tan(params[0]->GetValue());
-}
-CheckedResult<double> ArcTan(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::atan(params[0]->GetValue());
-}
-CheckedResult<double> ArcSin(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::asin(params[0]->GetValue());
-}
-CheckedResult<double> ArcCos(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::acos(params[0]->GetValue());
-}
-CheckedResult<double> Cosh(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::cosh(params[0]->GetValue());
-}
-CheckedResult<double> Sinh(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::sinh(params[0]->GetValue());
-}
-CheckedResult<double> Tanh(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::tanh(params[0]->GetValue());
-}
-CheckedResult<double> Exp(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::exp(params[0]->GetValue());
-}
-CheckedResult<double> Ln(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::log(params[0]->GetValue());
-}
-CheckedResult<double> Log(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::log(params[0]->GetValue());
-}
-CheckedResult<double> Log10(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::log10(params[0]->GetValue());
-}
-CheckedResult<double> Log2(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::log2(params[0]->GetValue());
-}
-CheckedResult<double> Ceil(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::ceil(params[0]->GetValue());
-}
-CheckedResult<double> Floor(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 1)
-    return std::floor(params[0]->GetValue());
-}
-CheckedResult<double> Functions::Cut(const std::vector<spExpression>& params)
-{
-    CheckParams(params, 4)
-    auto& var = params[0];
-    auto& axis = params[1];
-    auto& start = params[2];
-    auto& end = params[3];
-
-    /*
-        var s1 = -(z - 0.5); // Верх
-        var s2 = z + 0.5; // Снизу
-        RETURN W & s1 & s2;
-    */
-    auto plane1 = (-axis->GetValue() + end->GetValue());
-    auto plane2 = (axis->GetValue() - start->GetValue());
-    return Operations::RvCross(var->GetValue(), Operations::RvCross(plane1, plane2));
-}
-
-
-std::vector<FunctionInfo<FunctionExpression::FuncType>> Functions::_functions
-{
-        { "abs" , &Abs, "abs(number)" },
-        { "sqrt" , &Sqrt, "sqrt(number)" },
-        { "sin", &Sin, "sin(number)" },
-        { "cos" , &Cos, "cos(number)" },
-        { "tan" , &Tan, "tan(number)" },
-        { "arctan" , &ArcTan, "arctan(number)" },
-        { "arcsin" , &ArcSin, "arcsin(number)" },
-        { "arccos" , &ArcCos, "arccos(number)" },
-        { "cosh" , &Cosh, "cosh(number)" },
-        { "sinh" , &Sinh, "sinh(number)" },
-        { "tanh" , &Tanh, "tanh(number)" },
-        { "exp" , &Exp, "exp(number)" },
-        { "ln" , &Ln, "ln(number)" },
-        { "log" , &Log, "log(number)" },
-        { "log10" , &Log10, "log10(number)" },
-        { "log2" , &Log2, "log2(number)" },
-        { "ceil" , &Ceil, "ceil(number)" },
-        { "floor" , &Floor, "floor(number)" }
+        { "abs" , {LanguageType::Double}, {LanguageType::Double}, "abs(number) -> number" },
+        { "sqrt" , {LanguageType::Double}, {LanguageType::Double}, "sqrt(number) -> number" },
+        { "sin", {LanguageType::Double}, {LanguageType::Double}, "sin(number) -> number" },
+        { "tan" , {LanguageType::Double}, {LanguageType::Double}, "tan(number) -> number" },
+        { "cos" , {LanguageType::Double}, {LanguageType::Double}, "cos(number) -> number" },
+        { "arctan", {LanguageType::Double}, {LanguageType::Double}, "arctan(number) -> number" },
+        { "arcsin", {LanguageType::Double}, {LanguageType::Double}, "arcsin(number) -> number" },
+        { "arccos", {LanguageType::Double}, {LanguageType::Double}, "arccos(number) -> number" },
+        { "cosh", {LanguageType::Double}, {LanguageType::Double}, "cosh(number) -> number" },
+        { "sinh", {LanguageType::Double}, {LanguageType::Double}, "sinh(number) -> number" },
+        { "tanh", {LanguageType::Double}, {LanguageType::Double}, "tanh(number) -> number" },
+        { "exp", {LanguageType::Double}, {LanguageType::Double}, "exp(number) -> number" },
+        { "ln", {LanguageType::Double}, {LanguageType::Double}, "ln(number) -> number" },
+        { "log", {LanguageType::Double}, {LanguageType::Double}, "log(number) -> number" },
+        { "log10", {LanguageType::Double},{LanguageType::Double}, "log10(number) -> number" },
+        { "log2", {LanguageType::Double}, {LanguageType::Double}, "log2(number) -> number" },
+        { "ceil", {LanguageType::Double}, {LanguageType::Double}, "ceil(number) -> number" },
+        { "floor", {LanguageType::Double}, {LanguageType::Double}, "floor(number) -> number" }
 };
 
 std::vector<CustomFunction> Functions::_customFunctions
@@ -195,7 +79,7 @@ void Functions::DumpCustomsOnDemandTo(const std::string &filepath)
     }
 }
 
-FunctionInfo<FunctionExpression::FuncType>* Functions::Find(const std::string &name)
+FunctionInfo* Functions::Find(const std::string &name)
 {
     for (auto& func : _functions)
         if (func.Name() == name)
@@ -203,7 +87,7 @@ FunctionInfo<FunctionExpression::FuncType>* Functions::Find(const std::string &n
     return nullptr;
 }
 
-const std::vector<FunctionInfo<FunctionExpression::FuncType>>& Functions::GetAll()
+const std::vector<FunctionInfo>& Functions::GetAll()
 {
     return _functions;
 }
@@ -225,4 +109,17 @@ void Functions::AddCustom(const CustomFunction& function)
 {
     if (!FindCustom(function.Name()))
         _customFunctions.push_back(function);
+}
+
+std::map<string, std::vector<CustomFunction*>> Functions::GetTagedCustomFuncs()
+{
+    std::map<std::string, std::vector<CustomFunction*>> _tagedFuncs;
+    for (CustomFunction& f: _customFunctions)
+    {
+        if (_tagedFuncs.find(f.Info().Tags()) == _tagedFuncs.end())
+            _tagedFuncs[f.Info().Tags()] = {&f};
+        else
+            _tagedFuncs[f.Info().Tags()].push_back(&f);
+    }
+    return _tagedFuncs;
 }

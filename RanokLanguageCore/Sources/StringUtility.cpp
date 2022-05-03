@@ -37,3 +37,32 @@ std::string StringUtility::Reduce(const std::string& str,
     return result;
 }
 
+std::string StringUtility::GetRandomString(int len)
+{
+    static const char alphanum[] =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+    std::string result;
+    result.reserve(len);
+
+    for (int i = 0; i < len; ++i)
+        result += alphanum[rand() % (sizeof(alphanum) - 1)];
+
+    return result;
+}
+
+std::vector<std::string> StringUtility::Split(std::string string, const std::string& delimiter)
+{
+    std::vector<std::string> result;
+
+    size_t pos = 0;
+    while ((pos = string.find(delimiter)) != std::string::npos)
+    {
+        result.push_back(string.substr(0, pos));
+        string.erase(0, pos + delimiter.length());
+    }
+    result.push_back(string);
+
+    return result;
+}
+

@@ -2,8 +2,7 @@
 // Created by Balalarga on 07.03.2022.
 //
 
-#include <map>
-#include <functional>
+#include "FunctionInfo.h"
 
 
 class Operations
@@ -11,20 +10,14 @@ class Operations
 public:
     Operations() = delete;
 
-    using Unary = std::function<double(double)>;
-    using Binary = std::function<double(double, double)>;
-
-    static Unary UnaryFromString(const std::string& name);
-    static const std::map<std::string, Unary>& GetUnaries();
+    static FunctionInfo* UnaryFromString(const std::string& name);
+    static const std::vector<FunctionInfo>& GetUnaries();
     
-    static Binary BinaryFromString(const std::string& name);
-    static const std::map<std::string, Binary>& GetBinaries();
-
-    static double RvCross(double a, double b);
-    static double RvUnion(double a, double b);
-
+    static FunctionInfo* BinaryFromString(const std::string& name);
+    static const std::vector<FunctionInfo>& GetBinaries();
+    
 
 private:
-    static std::map<std::string, Unary> _unaryOperations;
-    static std::map<std::string, Binary> _binaryOperations;
+    static std::vector<FunctionInfo> _unaryOperations;
+    static std::vector<FunctionInfo> _binaryOperations;
 };

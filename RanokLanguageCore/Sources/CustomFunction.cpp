@@ -3,7 +3,7 @@
 //
 
 #include "CustomFunction.h"
-
+#include "../Utility/StringUtility.h"
 #include <sstream>
 
 
@@ -12,10 +12,14 @@ void CustomFunction::SetRoot(spExpression& root)
     _root = root;
 }
 
-CustomFunction::CustomFunction(const FunctionInfo<FunctionExpression::FuncType> &info, const std::string &code):
-    _info(info),
+CustomFunction::CustomFunction(const std::string& name, const std::string &code):
     _code(code)
 {
+    auto nameNtag = StringUtility::Split(name, ":");
+    _info.name = nameNtag[0];
+    if (nameNtag.size() != 1)
+        _info.tags = nameNtag[1];
+
     Parser parser;
     _program = parser.Parse(Lexer::CreateFrom(code));
     _args = _program.Table().Arguments();
@@ -26,61 +30,61 @@ CustomFunction::CustomFunction(const FunctionInfo<FunctionExpression::FuncType> 
     for (size_t i = 0; i < Args().size(); ++i)
     {
         customDesc << Args()[i]->name;
+        if (auto arr = dynamic_cast<ArrayExpression*>(Args()[i]->child.get()))
+        {
+            customDesc << "[" << arr->Values.size() << "]";
+        }
         if (i != Args().size() - 1)
             customDesc << ", ";
     }
-    customDesc << ")";
-    _info.desc = customDesc.str();
-}
+    customDesc << ") -> ";
 
-CustomFunction::CustomFunction(const std::string &name, const std::string &code):
-    CustomFunction({name, nullptr}, code)
-{
-
-}
-
-
-static std::string Trim(const std::string& str,
-                 const std::string& whitespace = " \t\n")
-{
-    const auto strBegin = str.find_first_not_of(whitespace);
-    if (strBegin == std::string::npos)
-        return ""; // no content
-
-    const auto strEnd = str.find_last_not_of(whitespace);
-    const auto strRange = strEnd - strBegin + 1;
-
-    return str.substr(strBegin, strRange);
-}
-
-static std::string Reduce(const std::string& str,
-                   const std::string& fill = " ",
-                   const std::string& whitespace = " \t\n")
-{
-    // trim first
-    auto result = Trim(str, whitespace);
-
-    // replace sub ranges
-    auto beginSpace = result.find_first_of(whitespace);
-    while (beginSpace != std::string::npos)
+    // Find out return value type
+    if (_program.Root())
     {
-        const auto endSpace = result.find_first_not_of(whitespace, beginSpace);
-        const auto range = endSpace - beginSpace;
-
-        result.replace(beginSpace, range, fill);
-
-        const auto newStart = beginSpace + fill.length();
-        beginSpace = result.find_first_of(whitespace, newStart);
+        if (auto arr = dynamic_cast<ArrayExpression*>(_program.Root().get()))
+        {
+            _info.returnType = {LanguageType::DoubleArray, static_cast<unsigned>(arr->Values.size())};
+        }
+        else if (auto var = dynamic_cast<VariableExpression*>(_program.Root().get()))
+        {
+            if (auto arr = dynamic_cast<ArrayExpression*>(var->child.get()))
+            {
+                _info.returnType = {LanguageType::DoubleArray, static_cast<unsigned>(arr->Values.size())};
+            }
+            else
+            {
+                _info.returnType.Type = LanguageType::Double;
+            }
+        }
+        else if (auto expr = dynamic_cast<FunctionExpression*>(_program.Root().get()))
+        {
+            _info.returnType = expr->function.ReturnType();
+        }
+        else
+        {
+            _info.returnType.Count = 1;
+            _info.returnType.Type = LanguageType::Double;
+        }
     }
 
-    return result;
+    if (_info.returnType.Count == 1)
+        customDesc << "number";
+    else
+        customDesc << "[" << _info.returnType.Count << "]";
+    _info.desc = customDesc.str();
 }
-
 
 std::string CustomFunction::ToString(const CustomFunction &func)
 {
     std::stringstream stream;
-    stream << func.Name() << "\n{\n" << func.Code() << "\n}\n";
+    stream << func.Name();
+    if (func.Info().Tags().size() > 0)
+    {
+        stream << ":";
+        stream << func.Info().Tags();
+    }
+    stream << "\n{\n" << func.Code() << "\n}\n";
     return stream.str();
 }
 
@@ -88,10 +92,30 @@ CustomFunction CustomFunction::FromString(const std::string &str, int& endId)
 {
     std::string name;
     std::string code;
-    int codeStart = str.find_first_of("{");
-    int codeEnd = str.find_first_of("}");
-    name = Reduce(str.substr(0, codeStart++), "");
-    code = Trim(str.substr(codeStart, codeEnd - codeStart));
+    int codeStart = str.find_first_of('{');
+    int braceCounter = 0;
+    int codeEnd = str.size();
+    for (size_t i = codeStart; i < str.size(); ++i)
+    {
+        if (str[i] == '{')
+            ++braceCounter;
+        else if (str[i] == '}')
+            --braceCounter;
+
+        if (braceCounter == 0)
+        {
+            codeEnd = i;
+            break;
+        }
+    }
+
+    name = StringUtility::Reduce(str.substr(0, codeStart++), "");
+    code = StringUtility::Trim(str.substr(codeStart, codeEnd - codeStart));
     endId += codeEnd + 1;
-    return {name, code};
+    return CustomFunction(name, code);
+}
+
+CustomFunction CustomFunction::FromString(const std::string &name, const std::string &code)
+{
+    return CustomFunction(name, code);
 }
