@@ -82,12 +82,7 @@ std::string CustomFunction::ToString(const CustomFunction &func)
     if (func.Info().Tags().size() > 0)
     {
         stream << ":";
-        for (size_t i = 0; i < func.Info().Tags().size(); ++i)
-        {
-            stream << func.Info().Tags()[i];
-            if (i < func.Info().Tags().size()-1)
-                stream << ".";
-        }
+        stream << func.Info().Tags();
     }
     stream << "\n{\n" << func.Code() << "\n}\n";
     return stream.str();
