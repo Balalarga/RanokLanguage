@@ -88,13 +88,13 @@ std::string CustomFunction::ToString(const CustomFunction &func)
     return stream.str();
 }
 
-CustomFunction CustomFunction::FromString(const std::string &str, int& endId)
+CustomFunction CustomFunction::FromString(const std::string &str, size_t& endId)
 {
     std::string name;
     std::string code;
-    int codeStart = str.find_first_of('{');
+    size_t codeStart = str.find_first_of('{');
     int braceCounter = 0;
-    int codeEnd = str.size();
+    size_t codeEnd = str.size();
     for (size_t i = codeStart; i < str.size(); ++i)
     {
         if (str[i] == '{')

@@ -49,7 +49,7 @@ void Functions::InitCustomsFrom(const std::string &filepath)
     std::ifstream funcsFile(filepath);
     if (funcsFile)
     {
-        int startId = 0;
+        size_t startId = 0;
         std::stringstream dataStream;
         dataStream << funcsFile.rdbuf();
         std::string data = StringUtility::Trim(dataStream.str());

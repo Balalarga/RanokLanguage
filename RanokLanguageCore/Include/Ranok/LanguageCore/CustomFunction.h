@@ -28,7 +28,7 @@ public:
 
 
     static std::string ToString(const CustomFunction& func);
-    static CustomFunction FromString(const std::string& str, int &endId);
+    static CustomFunction FromString(const std::string& str, size_t& endId);
     static CustomFunction FromString(const std::string& name, const std::string& code);
 
 
